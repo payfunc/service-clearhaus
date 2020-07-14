@@ -1,12 +1,7 @@
 {
+	"compilerOptions": { "baseUrl": ".", "paths": { "*": ["types/*"] } },
 	"extends": "./tsconfig.test.json",
-	"compilerOptions": {
-		"declaration": true,
-		"sourceMap": true,
-		"sourceRoot": "../",
-		"outDir": "dist"
-	},
-	"files": [
-		"index.ts"
-	]
+	"rootDir": ".",
+	"sourceMap": true,
+	"strict": true
 }
