@@ -10,6 +10,7 @@ export interface Request {
 	text_on_statement?: string
 	reference?: string
 	card: authly.Token
+	createAccount?: boolean
 }
 
 export namespace Request {
@@ -21,6 +22,7 @@ export namespace Request {
 			(value.recurring == undefined || typeof value.recurring == "boolean") &&
 			(value.text_on_statement == undefined || typeof value.text_on_statement == "string") &&
 			(value.reference == undefined || typeof value.reference == "string") &&
-			authly.Token.is(value.card)
+			authly.Token.is(value.card) &&
+			(value.createAccount == undefined || typeof value.createAccount == "boolean")
 	}
 }
