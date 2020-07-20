@@ -9,8 +9,6 @@ export interface Request {
 	recurring?: boolean
 	text_on_statement?: string
 	reference?: string
-	card: authly.Token
-	createAccount?: boolean
 }
 
 export namespace Request {
@@ -21,8 +19,6 @@ export namespace Request {
 			(value.ip == undefined || typeof value.ip == "string") &&
 			(value.recurring == undefined || typeof value.recurring == "boolean") &&
 			(value.text_on_statement == undefined || typeof value.text_on_statement == "string") &&
-			(value.reference == undefined || typeof value.reference == "string") &&
-			authly.Token.is(value.card) &&
-			(value.createAccount == undefined || typeof value.createAccount == "boolean")
+			(value.reference == undefined || typeof value.reference == "string")
 	}
 }
