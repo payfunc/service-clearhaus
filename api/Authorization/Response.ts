@@ -1,5 +1,5 @@
 import * as isoly from "isoly"
-import * as card from "../Card"
+import { Response as cardResponse } from "../Card/Response"
 import { Status } from "../Status"
 
 export interface Response {
@@ -16,7 +16,7 @@ export interface Response {
 		matches: boolean,
 	}
 	_embedded: {
-		card: card.Response,
+		card: cardResponse,
 	}
 	_links: {
 		self: { href: string },
@@ -39,7 +39,7 @@ export namespace Response {
 			typeof value.recurring == "boolean" &&
 			typeof value.thread_secure == "boolean" &&
 			typeof value.csc == "object" && typeof value.csc.present == "boolean" && typeof value.csc.matches == "boolean" &&
-			typeof value._embedded == "object" && card.Response.is(value._embedded.card) &&
+			typeof value._embedded == "object" && cardResponse.is(value._embedded.card) &&
 			typeof value._links == "object" &&
 			typeof value._links.self == "object" && typeof value._links.self.href == "string" &&
 			typeof value._links.card == "object" && typeof value._links.card.href == "string" &&

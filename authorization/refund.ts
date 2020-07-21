@@ -3,15 +3,15 @@ import * as gracely from "gracely"
 import * as authly from "authly"
 import * as model from "@payfunc/model"
 import * as card from "@cardfunc/model"
-import * as api from "../api"
+import * as service from "../index"
 
 export async function refund(merchant: model.Merchant.Key, authorization: card.Authorization, refundBody: card.Refund.Creatable): Promise<card.Refund | gracely.Error> {
 	let result: card.Refund | gracely.Error
 	if (!merchant.card)
 		result = gracely.client.unauthorized()
 	else {
-		const clearhausRefund = api.Refund.connect(merchant.card.acquirer, authorization.reference)
-		const refundRequest: api.Refund.Request = {}
+		const clearhausRefund = service.api.Refund.connect(merchant.card.acquirer, authorization.reference)
+		const refundRequest: service.api.Refund.Request = {}
 		const decimals = authorization.currency && isoly.Currency.decimalDigits(authorization.currency) || 0
 		if (refundBody.amount)
 			refundRequest.amount = Math.round(refundBody.amount * 10 ** decimals)
@@ -32,7 +32,7 @@ export async function refund(merchant: model.Merchant.Key, authorization: card.A
 					}
 					break
 				default:
-					result = api.Status.asError(response.status)
+					result = service.api.Status.asError(response.status)
 					break
 			}
 		}

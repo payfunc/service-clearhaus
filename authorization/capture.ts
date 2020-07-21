@@ -2,7 +2,7 @@ import * as isoly from "isoly"
 import * as gracely from "gracely"
 import * as model from "@payfunc/model"
 import * as card from "@cardfunc/model"
-import * as api from "../api"
+import * as service from "../index"
 
 // tslint:disable-next-line: no-shadowed-variable
 export async function capture(merchant: model.Merchant.Key, authorization: card.Authorization, capture: card.Capture.Creatable, id: string): Promise<card.Capture | gracely.Error> {
@@ -10,8 +10,8 @@ export async function capture(merchant: model.Merchant.Key, authorization: card.
 	if (!merchant.card)
 		result = gracely.client.unauthorized()
 	else {
-		const captures = api.Capture.connect(merchant.card.acquirer, authorization.reference)
-		const request: api.Capture.Request = {}
+		const captures = service.api.Capture.connect(merchant.card.acquirer, authorization.reference)
+		const request: service.api.Capture.Request = {}
 		const decimals = authorization.currency && isoly.Currency.decimalDigits(authorization.currency) || 0
 		if (capture.amount)
 			request.amount = Math.round(capture.amount * 10 ** decimals)
