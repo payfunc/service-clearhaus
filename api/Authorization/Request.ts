@@ -1,6 +1,4 @@
-import * as authly from "authly"
 import * as isoly from "isoly"
-import * as card from "../Card"
 
 export interface Request {
 	amount: number
