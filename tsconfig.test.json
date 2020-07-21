@@ -2,6 +2,7 @@
 	"compilerOptions": {
 		"target": "es6",
 		"module": "commonjs",
+		"esModuleInterop": true,
 		"noImplicitAny": true,
 		"removeComments": true,
 		"preserveConstEnums": true,
@@ -21,7 +22,10 @@
 			"suppressWhileTypeErrorsPresent": false,
 			"mockTypeScriptVersion": false
 			}
-		]
+		],
+		"paths": { 
+			"*": ["types/*"] 
+		}
 	},
 	"typeAcquisition": {
 		"enable": true
