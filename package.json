@@ -53,19 +53,20 @@
   "authly": "0.0.40",
   "gracely": "0.0.33",
   "isoly": "0.0.15",
-  "form-urlencoded": "^4.1.4",
+  "form-urlencoded": "^4.2.1",
   "node-fetch": "^2.6.0"
  },
  "devDependencies": {
-  "@types/jest": "^26.0.4",
-  "@types/node": "^14.0.23",
+  "@types/form-urlencoded": "^2.0.1",
+  "@types/jest": "^26.0.0",
+  "@types/node": "^14.0.24",
   "@types/node-fetch": "^2.5.7",
   "babel-core": "^6.26.3",
   "babel-jest": "^26.1.0",
   "jest": "^26",
-  "ts-jest": "^26.1.2",
+  "ts-jest": "^26.1.0",
   "tslint": "^6.1.2",
-  "typescript": "^3.9.6",
+  "typescript": "^3.9.7",
   "watch": "^1.0.2"
  }
 }
