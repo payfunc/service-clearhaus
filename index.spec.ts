@@ -14,7 +14,7 @@ describe("service-clearhaus", () => {
 		service.api.Refund.Response.is({})
 		expect(service.api.Method.is("card")).toBeTruthy()
 		service.api.Status.is({})
-		expect(service.api.Status.asError({ code: 40110 }).status).toEqual(502)
+		expect(service.api.Status.asError({ code: 40110 }).status).toEqual(400)
 		const authorizationFunctions = [service.authorization.cancel, service.authorization.capture, service.authorization.refund]
 	})
 })
