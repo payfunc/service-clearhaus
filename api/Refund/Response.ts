@@ -1,6 +1,6 @@
 import { Status } from "../Status"
 
-export type Response = {
+export interface Response {
 	id: string
 	status: { code: Status }
 	amount: number
