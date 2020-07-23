@@ -21,6 +21,7 @@ export type Status =
 	40413 | // Insufficient funds
 	40414 | // Suspnumberected fraud
 	40415 | // Amount limit exceeded
+	40416 | // Additional authentication required
 	40420 | // Merchant blocked by cardholder
 	50000   // Clearhaus error
 
@@ -30,7 +31,8 @@ export namespace Status {
 		return typeof(value) == "number" && (
 			value == 20000 || value == 40000 || value == 40110 || value == 40111 || value == 40120 || value == 40130 || value == 40135 ||
 			value == 40140 || value == 40150 || value == 40190 || value == 40200 || value == 40300 || value == 40310 || value == 40400 ||
-			value == 40410 || value == 40411 || value == 40412 || value == 40413 || value == 40414 || value == 40415 || value == 40420 || value == 50000
+			value == 40410 || value == 40411 || value == 40412 || value == 40413 || value == 40414 || value == 40415 || value == 40416 ||
+			value == 40420 || value == 50000
 		)
 	}
 	export function asError(status: { code: Status, message?: string }): gracely.Error {
@@ -56,9 +58,10 @@ export namespace Status {
 			case 40413: result = gracely.client.malformedContent("amount", "number", "Insufficient funds.", status.message); break
 			case 40414: result = gracely.client.malformedContent("card.pan", "string", "Suspected fraud.", status.message); break
 			case 40415: result = gracely.client.malformedContent("amount", "number", "Amount limit exceeded.", status.message); break
+			case 40416: result = gracely.client.malformedContent("card.pares", "string", "Additional authentication required.", status.message); break
 			case 40420: result = gracely.client.malformedContent("card.pan", "string", "Merchant blocked by cardholder.", status.message); break
 			case 50000: result = gracely.server.backendFailure("Clearhaus", "Unkown acquirer error.", status.message); break
-			default: result = gracely.server.backendFailure("Clearhaus", `Unknown acquirer problem with status code ${ status }`, status.message); break
+			default: result = gracely.server.backendFailure("Clearhaus", `Unknown acquirer problem with status code ${ status.code }`, status.message); break
 		}
 		return result
 	}
