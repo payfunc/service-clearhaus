@@ -26,6 +26,7 @@ export namespace api {
 		export type Response = AuthorizationResponse
 		export namespace Response {
 			export const is = AuthorizationResponse.is
+			export const from = AuthorizationResponse.from
 		}
 	}
 	export namespace Cancel {
