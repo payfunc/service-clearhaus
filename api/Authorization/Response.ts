@@ -66,15 +66,18 @@ export namespace Response {
 				created: response.processed_at,
 				amount: response.amount / 10 ** decimals,
 				currency: response.currency,
-				card: token,
 				type: "card",
 				scheme: cardInfo.scheme ?? "unknown",
 				iin: cardInfo.iin ?? "??????",
 				last4: cardInfo.last4 ?? "????",
 				expires: cardInfo.expires ?? [1, 0],
-				service: "clearhaus",
+				service: "cardfunc",
 				status: "created"
 			}
+			if (card.Card.Token.is(cardInfo))
+				output.card = token
+			else if (model.Account.Method.is(cardInfo))
+				output.account = token
 			if (request.text_on_statement)
 				output.descriptor = request.text_on_statement
 			if (output.amount == 0 && request.recurring) {
