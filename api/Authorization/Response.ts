@@ -76,8 +76,11 @@ export namespace Response {
 			}
 			if (card.Card.Token.is(cardInfo))
 				output.card = token
-			else if (model.Account.Method.is(cardInfo))
+			else if (model.Account.Method.is(cardInfo)) {
 				output.account = token
+				if (cardInfo.card)
+					output.card = cardInfo.card
+			}
 			if (request.text_on_statement)
 				output.descriptor = request.text_on_statement
 			if (output.amount == 0 && request.recurring) {

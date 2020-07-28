@@ -1,10 +1,11 @@
 import { Request as RefundRequest } from "./Request"
 import { Response as RefundResponse } from "./Response"
 import { Collection } from "../Collection"
+import { Configuration } from "../Configuration"
 import * as authly from "authly"
 
 export namespace Refund {
-	export function connect(configuration: {url: string, key: string }, id: string): Collection<Request, Response> {
+	export function connect(configuration: Configuration, id: string): Collection<Request, Response> {
 		return new Collection(
 			configuration.url + "/authorizations/" + id + "/refunds",
 			configuration.key,
