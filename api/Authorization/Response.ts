@@ -77,9 +77,10 @@ export namespace Response {
 			if (card.Card.Token.is(cardInfo))
 				output.card = token
 			else if (model.Account.Method.is(cardInfo)) {
+				const cardInternalInfo = await authly.Verifier.create("development", authly.Algorithm.none())?.verify(cardInfo.token) || await authly.Verifier.create("production", authly.Algorithm.none())?.verify(cardInfo.token)
 				output.account = token
-				if (cardInfo.card)
-					output.card = cardInfo.card
+				if (model.Account.Method.Card.Creatable.is(cardInternalInfo) && cardInternalInfo.card)
+					output.card = cardInternalInfo.card
 			}
 			if (request.text_on_statement)
 				output.descriptor = request.text_on_statement
