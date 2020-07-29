@@ -15,7 +15,7 @@ import { Method as apiMethod } from "./api/Method"
 import { Status as apiStatus } from "./api/Status"
 import { cancel as authorizationCancel } from "./authorization/cancel"
 import { capture as authorizationCapture } from "./authorization/capture"
-import { create as authorizationCreate } from "./authorization/create" 
+import { create as authorizationCreate } from "./authorization/create"
 import { refund as authorizationRefund } from "./authorization/refund"
 
 export namespace api {
