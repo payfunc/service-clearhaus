@@ -15,6 +15,7 @@ import { Method as apiMethod } from "./api/Method"
 import { Status as apiStatus } from "./api/Status"
 import { cancel as authorizationCancel } from "./authorization/cancel"
 import { capture as authorizationCapture } from "./authorization/capture"
+import { create as authorizationCreate } from "./authorization/create"
 import { refund as authorizationRefund } from "./authorization/refund"
 
 export namespace api {
@@ -26,6 +27,8 @@ export namespace api {
 		export type Response = AuthorizationResponse
 		export namespace Response {
 			export const is = AuthorizationResponse.is
+			export const from = AuthorizationResponse.from
+			export const isError = AuthorizationResponse.isError
 		}
 	}
 	export namespace Cancel {
@@ -84,5 +87,6 @@ export namespace api {
 export namespace authorization {
 	export const cancel = authorizationCancel
 	export const capture = authorizationCapture
+	export const create = authorizationCreate
 	export const refund = authorizationRefund
 }

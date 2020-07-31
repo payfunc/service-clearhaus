@@ -5,14 +5,14 @@ import * as card from "@cardfunc/model"
 import * as service from "../index"
 
 // tslint:disable-next-line: no-shadowed-variable
-export async function capture(merchant: model.Merchant.Key, authorization: card.Authorization, capture: card.Capture.Creatable, id: string): Promise<card.Capture | gracely.Error> {
+export async function capture(merchant: model.Merchant.Key, reference: string, currency: isoly.Currency, capture: card.Capture.Creatable, id: string): Promise<card.Capture | gracely.Error> {
 	let result: card.Capture | gracely.Error
 	if (!merchant.card)
 		result = gracely.client.unauthorized()
 	else {
-		const captures = service.api.Capture.connect(merchant.card.acquirer, authorization.reference)
+		const captures = service.api.Capture.connect(merchant.card.acquirer, reference)
 		const request: service.api.Capture.Request = {}
-		const decimals = authorization.currency && isoly.Currency.decimalDigits(authorization.currency) || 0
+		const decimals = isoly.Currency.decimalDigits(currency) || 0
 		if (capture.amount)
 			request.amount = Math.round(capture.amount * 10 ** decimals)
 		if (capture.descriptor)
