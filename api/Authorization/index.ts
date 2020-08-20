@@ -21,6 +21,5 @@ export namespace Authorization {
 	export namespace Response {
 		export const is = AuthorizationResponse.is
 		export const from = AuthorizationResponse.from
-		export const isError = AuthorizationResponse.isError
 	}
 }
