@@ -11,12 +11,14 @@ export interface Request {
 
 export namespace Request {
 	export function is(value: any | Request): value is Request {
-		return typeof value == "object" &&
+		return (
+			typeof value == "object" &&
 			typeof value.amount == "number" &&
 			isoly.Currency.is(value.currency) &&
 			(value.ip == undefined || typeof value.ip == "string") &&
 			(value.recurring == undefined || typeof value.recurring == "boolean") &&
 			(value.text_on_statement == undefined || typeof value.text_on_statement == "string") &&
 			(value.reference == undefined || typeof value.reference == "string")
+		)
 	}
 }
