@@ -113,11 +113,4 @@ export namespace Response {
 		}
 		return result
 	}
-	export function isError(response: Response): undefined | gracely.Error {
-		return response.status.code == 20000
-			? response.csc.present && !response.csc.matches
-				? gracely.client.malformedContent("card.csc", "string", "CSC code invalid.")
-				: undefined
-			: Status.asError(response.status)
-	}
 }
