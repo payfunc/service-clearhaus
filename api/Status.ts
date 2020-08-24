@@ -78,7 +78,7 @@ export namespace Status {
 				)
 				break
 			case 40135:
-				result = gracely.client.malformedContent("card.pan", "string", "Card expired", status.message)
+				result = gracely.client.malformedContent("card.pan", "string", "Card expired.", status.message)
 				break
 			case 40140:
 				result = gracely.client.malformedContent("currency", "isoly.Currency", "Invalid currency.", status.message)
@@ -108,7 +108,7 @@ export namespace Status {
 				)
 				break
 			case 40400:
-				result = gracely.server.backendFailure("Clearhaus", "Acuirer backend problem.", status.message)
+				result = gracely.server.backendFailure("Clearhaus", "Acquirer backend problem.", status.message)
 				break
 			case 40410:
 				result = gracely.client.malformedContent(
@@ -150,7 +150,7 @@ export namespace Status {
 				)
 				break
 			case 50000:
-				result = gracely.server.backendFailure("Clearhaus", "Unkown acquirer error.", status.message)
+				result = gracely.server.backendFailure("Clearhaus", "Unknown acquirer error.", status.message)
 				break
 			default:
 				result = gracely.server.backendFailure(
