@@ -5,7 +5,12 @@ import * as model from "@payfunc/model"
 import * as card from "@cardfunc/model"
 import * as service from "../index"
 
-export async function refund(merchant: model.Merchant.Key, reference: string, currency: isoly.Currency, refundBody: card.Refund.Creatable): Promise<card.Refund | gracely.Error> {
+export async function refund(
+	merchant: model.Merchant.Key,
+	reference: string,
+	currency: isoly.Currency,
+	refundBody: card.Refund.Creatable
+): Promise<card.Refund | gracely.Error> {
 	let result: card.Refund | gracely.Error
 	if (!merchant.card)
 		result = gracely.client.unauthorized()

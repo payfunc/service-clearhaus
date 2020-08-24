@@ -8,14 +8,4 @@ import { Method } from "./Method"
 import { Status } from "./Status"
 import { Configuration } from "./Configuration"
 
-export {
-	Authorization,
-	Cancel,
-	Capture,
-	Card,
-	Refund,
-	Collection,
-	Configuration,
-	Method,
-	Status,
-}
+export { Authorization, Cancel, Capture, Card, Refund, Collection, Configuration, Method, Status }

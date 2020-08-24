@@ -7,10 +7,11 @@ import { Response as CaptureResponse } from "./Response"
 export namespace Capture {
 	export function connect(configuration: Configuration, authorization: string): Collection<Request, Response> {
 		return new Collection(
-			`${ configuration.url }/authorizations/${ authorization }/captures`,
+			`${configuration.url}/authorizations/${authorization}/captures`,
 			configuration.key,
 			process.env.clearhausKey,
-			process.env.clearhausSigningKey ? authly.Algorithm.RS256(undefined, process.env.clearhausSigningKey) : undefined)
+			process.env.clearhausSigningKey ? authly.Algorithm.RS256(undefined, process.env.clearhausSigningKey) : undefined
+		)
 	}
 	export type Request = CaptureRequest
 	export namespace Request {

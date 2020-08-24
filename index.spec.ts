@@ -17,10 +17,13 @@ describe("service-clearhaus", () => {
 		expect(service.api.Method.is("card")).toBeTruthy()
 		service.api.Status.is({})
 		expect(service.api.Status.asError({ code: 40110 }).status).toEqual(400)
-		const authorizationFunctions = [service.authorization.cancel, service.authorization.capture, service.authorization.refund]
+		const authorizationFunctions = [
+			service.authorization.cancel,
+			service.authorization.capture,
+			service.authorization.refund,
+		]
 	})
 	it("test internal accessibility", () => {
-		const accessible = api.Authorization.post
 		api.Authorization.Request.is({})
 		api.Authorization.Response.is({})
 		api.Cancel.Request.is({})

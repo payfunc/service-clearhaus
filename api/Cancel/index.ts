@@ -10,7 +10,8 @@ export namespace Cancel {
 			configuration.url + "/authorizations/" + id + "/voids",
 			configuration.key,
 			process.env.clearhausKey,
-			process.env.clearhausSigningKey ? authly.Algorithm.RS256(undefined, process.env.clearhausSigningKey) : undefined)
+			process.env.clearhausSigningKey ? authly.Algorithm.RS256(undefined, process.env.clearhausSigningKey) : undefined
+		)
 	}
 	export type Request = CancelRequest
 	export namespace Request {

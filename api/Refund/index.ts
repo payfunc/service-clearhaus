@@ -10,7 +10,8 @@ export namespace Refund {
 			configuration.url + "/authorizations/" + id + "/refunds",
 			configuration.key,
 			process.env.clearhausKey,
-			process.env.clearhausSigningKey ? authly.Algorithm.RS256(undefined, process.env.clearhausSigningKey) : undefined)
+			process.env.clearhausSigningKey ? authly.Algorithm.RS256(undefined, process.env.clearhausSigningKey) : undefined
+		)
 	}
 	export type Request = RefundRequest
 	export namespace Request {
