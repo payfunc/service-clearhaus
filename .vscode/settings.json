@@ -20,5 +20,7 @@
 		"eslint.autoFixOnSave": true,
 	},
 	"eslint.format.enable": true,
-	"eslint.lintTask.enable": true
+	"eslint.lintTask.enable": true,
+	"javascript.format.enable": false,
+	"typescript.format.enable": false
 }
