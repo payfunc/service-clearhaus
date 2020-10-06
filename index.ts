@@ -11,12 +11,17 @@ import { Response as CardResponse } from "./api/Card/Response"
 import { Refund as apiRefund } from "./api/Refund"
 import { Request as RefundRequest } from "./api/Refund/Request"
 import { Response as RefundResponse } from "./api/Refund/Response"
+import { MerchantApi as apiMerchantApi } from "./api/MerchantApi"
 import { Method as apiMethod } from "./api/Method"
+import { Request as settleRequest } from "./api/Settle/Request"
+import { Response as settleResponse } from "./api/Settle/Response"
+import { Settle as apiSettle } from "./api/Settle"
 import { Status as apiStatus } from "./api/Status"
 import { cancel as authorizationCancel } from "./authorization/cancel"
 import { capture as authorizationCapture } from "./authorization/capture"
 import { create as authorizationCreate } from "./authorization/create"
 import { refund as authorizationRefund } from "./authorization/refund"
+import { settle as settlementSettle } from "./settlement/settle"
 
 export namespace api {
 	export namespace Authorization {
@@ -73,9 +78,33 @@ export namespace api {
 			export const is = RefundResponse.is
 		}
 	}
+	export type MerchantApi = apiMerchantApi
+	export namespace MerchantApi {
+		export type ApiToken = apiMerchantApi.ApiToken
+		export namespace ApiToken {
+			export const is = apiMerchantApi.ApiToken.is
+		}
+		export type Configuration = apiMerchantApi.Configuration
+		export namespace Configuration {
+			export const is = apiMerchantApi.Configuration.is
+		}
+		export type Transaction = apiMerchantApi.Transaction
+		export namespace Transaction {
+			export const is = apiMerchantApi.Transaction.is
+		}
+	}
 	export type Method = apiMethod
 	export namespace Method {
 		export const is = apiMethod.is
+	}
+	export namespace Settle {
+		export const connect = apiSettle.connect
+		export namespace Request {
+			export const is = settleRequest.is
+		}
+		export namespace Response {
+			export const is = settleResponse.is
+		}
 	}
 	export type Status = apiStatus
 	export namespace Status {
@@ -88,4 +117,7 @@ export namespace authorization {
 	export const capture = authorizationCapture
 	export const create = authorizationCreate
 	export const refund = authorizationRefund
+}
+export namespace settlement {
+	export const settle = settlementSettle
 }
