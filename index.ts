@@ -88,6 +88,10 @@ export namespace api {
 		export namespace Configuration {
 			export const is = apiMerchantApi.Configuration.is
 		}
+		export type Settlement = apiMerchantApi.Settlement
+		export namespace Settlement {
+			export const is = apiMerchantApi.Settlement.is
+		}
 		export type Transaction = apiMerchantApi.Transaction
 		export namespace Transaction {
 			export const is = apiMerchantApi.Transaction.is
