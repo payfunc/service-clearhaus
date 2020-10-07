@@ -1,3 +1,4 @@
+import * as isoly from "isoly"
 import { Link } from "./Link"
 
 export interface Settlement {
@@ -10,7 +11,7 @@ export interface Settlement {
 		"ch:transactions"?: Link
 		[property: string]: Link | undefined
 	}
-	currency: "SEK"
+	currency: isoly.Currency
 	fees: {
 		total: number
 		sales?: number
