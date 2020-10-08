@@ -19,7 +19,7 @@ export namespace MerchantInfo {
 			typeof value.card.mid == "string"
 		)
 	}
-	export function convert(value: any | model.Merchant.Key | model.Merchant.Creatable): MerchantInfo | undefined {
+	export function convert(value: any | model.Key | model.Key.Creatable): MerchantInfo | undefined {
 		const output =
 			typeof value == "object" &&
 			(authly.Identifier.is(value.id) || authly.Identifier.is(value.sub)) &&

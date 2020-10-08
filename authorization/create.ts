@@ -6,7 +6,7 @@ import * as clearhaus from "../index"
 
 export async function create(
 	key: authly.Token,
-	merchant: model.Merchant.Key,
+	merchant: model.Key,
 	request: clearhaus.api.Authorization.Request,
 	token: authly.Token
 ): Promise<clearhaus.api.Authorization.Response | gracely.Error> {
