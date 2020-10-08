@@ -2,8 +2,8 @@ import * as isoly from "isoly"
 import { Link } from "./Link"
 
 export interface Settlement {
-	embedded: {
-		"ch:account": any
+	embedded?: {
+		"ch:account"?: any
 	}
 	_links: {
 		self?: Link
@@ -11,9 +11,9 @@ export interface Settlement {
 		"ch:transactions"?: Link
 		[property: string]: Link | undefined
 	}
-	currency: isoly.Currency
-	fees: {
-		total: number
+	currency?: isoly.Currency
+	fees?: {
+		total?: number
 		sales?: number
 		refunds?: number
 		authorisations?: number
@@ -28,10 +28,10 @@ export interface Settlement {
 	}
 	id: string
 	payout?: {
-		amount: number
-		date: string
-		reference_number: string
-		descriptor: string
+		amount?: number
+		date?: string
+		reference_number?: string
+		descriptor?: string
 	}
 	period?: {
 		start_date: string
@@ -39,13 +39,13 @@ export interface Settlement {
 	}
 	settled?: boolean
 	summary?: {
-		sales: number
-		credits: number
-		refunds: number
-		chargebacks: number
-		fees: number
-		other_postings: number
-		net: number
+		sales?: number
+		credits?: number
+		refunds?: number
+		chargebacks?: number
+		fees?: number
+		other_postings?: number
+		net?: number
 	}
 }
 

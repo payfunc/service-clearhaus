@@ -9,7 +9,7 @@ export interface Response {
 		curies?: [MerchantApi.Link]
 	}
 	_embedded?: {
-		"ch:transactions"?: any[]
+		"ch:transactions"?: MerchantApi.Transaction[]
 		"ch:settlements"?: MerchantApi.Settlement[]
 	}
 }

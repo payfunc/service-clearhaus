@@ -3,7 +3,7 @@ dotenv.config()
 import * as gracely from "gracely"
 import { MerchantApi } from "."
 
-describe("MerchantApi tests", () => {
+describe.skip("MerchantApi tests", () => {
 	let merchantApi: MerchantApi
 	it("getToken() twice and check that is it the same", async () => {
 		if (process.env.merchantApiUrl && process.env.merchantApiClientId && process.env.merchantApiClientSecret) {
@@ -16,14 +16,10 @@ describe("MerchantApi tests", () => {
 			expect(gracely.Error.is(token1)).toBeFalsy()
 			const token2 = await merchantApi.getToken()
 			expect(!gracely.Error.is(token1) && token1.token).toEqual(!gracely.Error.is(token2) && token2.token)
-			const example = await merchantApi.get("settlements", "period:2020-03-26..2020-04-29 mid:2016160", 1, 2)
-			console.log("Example: ", example)
 		} else
 			fail()
 	})
 	it("get()", async () => {
-		const example = await merchantApi.get("settlements", "period:2020-03-26..2020-04-29 mid:2016160", 1, 2)
-		console.log("Example: ", example)
 		expect(
 			gracely.Error.is(
 				await merchantApi.get(

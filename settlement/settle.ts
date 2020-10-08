@@ -7,9 +7,37 @@ type SettlementTransactions = {
 	settlement: service.api.MerchantApi.Settlement
 	transactions: service.api.MerchantApi.Transaction[]
 }
+
 export type SettleAction = {
-	merchant: model.Merchant.Key
-	action: { [orderId: string]: (model.Event.Settle | model.Event.Fail)[] }
+	merchant: model.Merchant.Key | { card: { mid: string } }
+	action: OrderAction
+}
+export namespace SettleAction {
+	export function is(value: any | SettleAction): value is SettleAction {
+		return (
+			typeof value == "object" &&
+			(model.Merchant.Key.is(value.merchant) ||
+				(typeof value.merchant == "object" &&
+					typeof value.merchant.card == "object" &&
+					typeof value.merchant.card.mid == "string")) &&
+			OrderAction.is(value.action)
+		)
+	}
+}
+export type OrderAction = {
+	[orderId: string]: (model.Event.Settle | model.Event.Fail)[] | undefined
+}
+export namespace OrderAction {
+	export function is(value: any | OrderAction): value is OrderAction {
+		return (
+			typeof value == "object" &&
+			Object.entries(value).every(
+				o =>
+					o[1] == undefined ||
+					(Array.isArray(o[1]) && o[1].every(e => model.Event.Settle.is(e) || model.Event.Fail.is(e)))
+			)
+		)
+	}
 }
 
 export async function settle(
@@ -68,20 +96,7 @@ export async function settle(
 							const initial: SettleAction = { merchant, action: {} }
 							output = gracely.Error.is(settlementsList)
 								? settlementsList
-								: settlementsList.reduce((previous: SettleAction, s: SettlementTransactions) => {
-										const newAction = convertResponse(merchant, s).action
-										Object.keys(previous.action).forEach(a =>
-											Object.keys(newAction).forEach(b => {
-												if (a == b)
-													previous.action[a] = previous.action[a].concat(newAction[b])
-											})
-										)
-										Object.keys(newAction).forEach(a => {
-											if (!Object.keys(previous.action).some(b => a == b))
-												previous.action[a] = newAction[a]
-										})
-										return previous
-								  }, initial)
+								: addendSettlementTransactions(settlementsList, merchant, initial)
 						}
 					}
 				}
@@ -91,6 +106,39 @@ export async function settle(
 		result = responses
 	}
 	return result
+}
+
+function addendSettlementTransactions(
+	newList: SettlementTransactions[],
+	merchant: model.Merchant.Key,
+	initial: SettleAction
+): SettleAction {
+	return newList.reduce((previous: SettleAction, s: SettlementTransactions) => {
+		const newAction: OrderAction = convertResponse(merchant, s).action
+		appendOrderAction(previous, newAction)
+		return previous
+	}, initial)
+}
+
+export function addendSettleAction(newList: SettleAction[], initial: SettleAction): SettleAction {
+	return newList.reduce((previous: SettleAction, s: SettleAction) => {
+		const newAction: OrderAction = s.action
+		appendOrderAction(previous, newAction)
+		return previous
+	}, initial)
+}
+
+function appendOrderAction(previous: SettleAction, newAction: OrderAction) {
+	Object.keys(previous.action).forEach(a =>
+		Object.keys(newAction).forEach(b => {
+			if (a == b)
+				previous.action[a] = previous.action[a]?.concat(newAction[b] ?? [])
+		})
+	)
+	Object.keys(newAction).forEach(a => {
+		if (!Object.keys(previous.action).some(b => a == b))
+			previous.action[a] = newAction[a]
+	})
 }
 
 async function getTransactions(

@@ -2,12 +2,6 @@ import * as gracely from "gracely"
 import { MerchantApi } from "../MerchantApi"
 import { Request as SettleRequest } from "./Request"
 import { Response as SettleResponse } from "./Response"
-// import { Collection } from "../Collection"
-// import * as authly from "authly"
-// import { Configuration } from "../Configuration"
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-// export interface Settle {}
 
 export namespace Settle {
 	export async function connect(configuration: MerchantApi.Configuration): Promise<MerchantApi | gracely.Error> {
