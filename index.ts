@@ -82,8 +82,8 @@ export namespace api {
 			export const is = RefundResponse.is
 		}
 	}
-	export type MerchantApi = apiMerchantApi
 	export namespace MerchantApi {
+		export type Connection = apiMerchantApi.Connection
 		export type ApiToken = apiMerchantApi.ApiToken
 		export namespace ApiToken {
 			export const is = apiMerchantApi.ApiToken.is

@@ -1,11 +1,14 @@
 import * as gracely from "gracely"
-import { MerchantApi } from "../MerchantApi"
+import * as service from "../../index"
+import { Connection } from "../MerchantApi/Connection"
 import { Request as SettleRequest } from "./Request"
 import { Response as SettleResponse } from "./Response"
 
 export namespace Settle {
-	export async function connect(configuration: MerchantApi.Configuration): Promise<MerchantApi | gracely.Error> {
-		const merchantApi = new MerchantApi(configuration)
+	export async function connect(
+		configuration: service.api.MerchantApi.Configuration
+	): Promise<Connection | gracely.Error> {
+		const merchantApi = new Connection(configuration)
 		const connected = await merchantApi
 			.getToken()
 			.catch(e => gracely.server.backendFailure("service-clearhaus", "Failed to connect to Clearhaus Merchant api."))

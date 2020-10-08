@@ -112,7 +112,7 @@ function appendOrderAction(
 async function getTransactions(
 	settlements: service.api.MerchantApi.Settlement[],
 	merchant: model.Merchant.Key,
-	connection: service.api.MerchantApi,
+	connection: service.api.MerchantApi.Connection,
 	startDate: string | undefined,
 	endDate: string | undefined
 ): Promise<service.api.MerchantApi.SettlementTransactions[] | gracely.Error> {
@@ -135,7 +135,7 @@ async function getTransactions(
 async function getTransactionsBySettlement(
 	settlement: service.api.MerchantApi.Settlement,
 	merchant: model.Merchant.Key,
-	connection: service.api.MerchantApi,
+	connection: service.api.MerchantApi.Connection,
 	startDate: string | undefined,
 	endDate: string | undefined
 ): Promise<service.api.MerchantApi.Transaction[] | gracely.Error> {

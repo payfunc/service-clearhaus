@@ -1,13 +1,13 @@
 import * as dotenv from "dotenv"
 dotenv.config()
 import * as gracely from "gracely"
-import { MerchantApi } from "."
+import { Connection as MerchantApiConnection } from "./Connection"
 
 describe.skip("MerchantApi tests", () => {
-	let merchantApi: MerchantApi
+	let merchantApi: MerchantApiConnection
 	it("getToken() twice and check that is it the same", async () => {
 		if (process.env.merchantApiUrl && process.env.merchantApiClientId && process.env.merchantApiClientSecret) {
-			merchantApi = new MerchantApi({
+			merchantApi = new MerchantApiConnection({
 				url: process.env.merchantApiUrl,
 				clientId: process.env.merchantApiClientId,
 				clientSecret: process.env.merchantApiClientSecret,
