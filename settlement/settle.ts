@@ -3,50 +3,13 @@ import * as gracely from "gracely"
 import * as model from "@payfunc/model"
 import * as service from "../index"
 
-type SettlementTransactions = {
-	settlement: service.api.MerchantApi.Settlement
-	transactions: service.api.MerchantApi.Transaction[]
-}
-
-export type SettleAction = {
-	merchant: model.Merchant.Key | { card: { mid: string } }
-	action: OrderAction
-}
-export namespace SettleAction {
-	export function is(value: any | SettleAction): value is SettleAction {
-		return (
-			typeof value == "object" &&
-			(model.Merchant.Key.is(value.merchant) ||
-				(typeof value.merchant == "object" &&
-					typeof value.merchant.card == "object" &&
-					typeof value.merchant.card.mid == "string")) &&
-			OrderAction.is(value.action)
-		)
-	}
-}
-export type OrderAction = {
-	[orderId: string]: (model.Event.Settle | model.Event.Fail)[] | undefined
-}
-export namespace OrderAction {
-	export function is(value: any | OrderAction): value is OrderAction {
-		return (
-			typeof value == "object" &&
-			Object.entries(value).every(
-				o =>
-					o[1] == undefined ||
-					(Array.isArray(o[1]) && o[1].every(e => model.Event.Settle.is(e) || model.Event.Fail.is(e)))
-			)
-		)
-	}
-}
-
 export async function settle(
 	merchants: model.Merchant.Key[],
 	configuration: service.api.MerchantApi.Configuration,
 	startDate?: isoly.DateTime,
 	endDate?: isoly.DateTime
-): Promise<(SettleAction | gracely.Error)[] | gracely.Error> {
-	let result: (SettleAction | gracely.Error)[] | gracely.Error
+): Promise<(service.api.MerchantApi.SettleAction | gracely.Error)[] | gracely.Error> {
+	let result: (service.api.MerchantApi.SettleAction | gracely.Error)[] | gracely.Error
 	const connection = await service.api.Settle.connect(configuration)
 	if (gracely.Error.is(connection))
 		result = connection
@@ -55,9 +18,9 @@ export async function settle(
 			endDate = isoly.DateTime.now()
 		if (!startDate)
 			startDate = isoly.DateTime.create(new Date(isoly.DateTime.parse(endDate).valueOf() - 1000 * 60 * 60 * 24))
-		const responses: (SettleAction | gracely.Error)[] = await Promise.all(
+		const responses: (service.api.MerchantApi.SettleAction | gracely.Error)[] = await Promise.all(
 			merchants.map(async merchant => {
-				let output: SettleAction | gracely.Error
+				let output: service.api.MerchantApi.SettleAction | gracely.Error
 				const settlementsResponse = !merchant.card
 					? gracely.client.missingProperty(
 							"card",
@@ -86,14 +49,10 @@ export async function settle(
 						if (!settlements)
 							output = gracely.client.notFound()
 						else {
-							const settlementsList: SettlementTransactions[] | gracely.Error = await getTransactions(
-								settlements,
-								merchant,
-								connection,
-								startDate,
-								endDate
-							)
-							const initial: SettleAction = { merchant, action: {} }
+							const settlementsList:
+								| service.api.MerchantApi.SettlementTransactions[]
+								| gracely.Error = await getTransactions(settlements, merchant, connection, startDate, endDate)
+							const initial: service.api.MerchantApi.SettleAction = { merchant, action: {} }
 							output = gracely.Error.is(settlementsList)
 								? settlementsList
 								: addendSettlementTransactions(settlementsList, merchant, initial)
@@ -109,26 +68,35 @@ export async function settle(
 }
 
 function addendSettlementTransactions(
-	newList: SettlementTransactions[],
+	newList: service.api.MerchantApi.SettlementTransactions[],
 	merchant: model.Merchant.Key,
-	initial: SettleAction
-): SettleAction {
-	return newList.reduce((previous: SettleAction, s: SettlementTransactions) => {
-		const newAction: OrderAction = convertResponse(merchant, s).action
+	initial: service.api.MerchantApi.SettleAction
+): service.api.MerchantApi.SettleAction {
+	return newList.reduce(
+		(previous: service.api.MerchantApi.SettleAction, s: service.api.MerchantApi.SettlementTransactions) => {
+			const newAction: service.api.MerchantApi.OrderAction = convertResponse(merchant, s).action
+			appendOrderAction(previous, newAction)
+			return previous
+		},
+		initial
+	)
+}
+
+export function addendSettleAction(
+	newList: service.api.MerchantApi.SettleAction[],
+	initial: service.api.MerchantApi.SettleAction
+): service.api.MerchantApi.SettleAction {
+	return newList.reduce((previous: service.api.MerchantApi.SettleAction, s: service.api.MerchantApi.SettleAction) => {
+		const newAction: service.api.MerchantApi.OrderAction = s.action
 		appendOrderAction(previous, newAction)
 		return previous
 	}, initial)
 }
 
-export function addendSettleAction(newList: SettleAction[], initial: SettleAction): SettleAction {
-	return newList.reduce((previous: SettleAction, s: SettleAction) => {
-		const newAction: OrderAction = s.action
-		appendOrderAction(previous, newAction)
-		return previous
-	}, initial)
-}
-
-function appendOrderAction(previous: SettleAction, newAction: OrderAction) {
+function appendOrderAction(
+	previous: service.api.MerchantApi.SettleAction,
+	newAction: service.api.MerchantApi.OrderAction
+) {
 	Object.keys(previous.action).forEach(a =>
 		Object.keys(newAction).forEach(b => {
 			if (a == b)
@@ -147,11 +115,11 @@ async function getTransactions(
 	connection: service.api.MerchantApi,
 	startDate: string | undefined,
 	endDate: string | undefined
-): Promise<SettlementTransactions[] | gracely.Error> {
-	let result: SettlementTransactions[] | gracely.Error = []
-	result = [] as SettlementTransactions[]
+): Promise<service.api.MerchantApi.SettlementTransactions[] | gracely.Error> {
+	let result: service.api.MerchantApi.SettlementTransactions[] | gracely.Error = []
+	result = [] as service.api.MerchantApi.SettlementTransactions[]
 	result = await settlements.reduce(async (previous, current) => {
-		let output: SettlementTransactions[] | gracely.Error = await previous
+		let output: service.api.MerchantApi.SettlementTransactions[] | gracely.Error = await previous
 		if (!gracely.Error.is(output)) {
 			const transactions = await getTransactionsBySettlement(current, merchant, connection, startDate, endDate)
 			if (gracely.Error.is(transactions))
@@ -198,8 +166,11 @@ async function getTransactionsBySettlement(
 	return result
 }
 
-export function convertResponse(merchant: model.Merchant.Key, input: SettlementTransactions): SettleAction {
-	const result: SettleAction = {
+export function convertResponse(
+	merchant: model.Merchant.Key,
+	input: service.api.MerchantApi.SettlementTransactions
+): service.api.MerchantApi.SettleAction {
+	const result: service.api.MerchantApi.SettleAction = {
 		merchant,
 		action: {},
 	}

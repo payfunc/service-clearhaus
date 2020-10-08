@@ -21,7 +21,11 @@ import { cancel as authorizationCancel } from "./authorization/cancel"
 import { capture as authorizationCapture } from "./authorization/capture"
 import { create as authorizationCreate } from "./authorization/create"
 import { refund as authorizationRefund } from "./authorization/refund"
-import { settle as settlementSettle } from "./settlement/settle"
+import {
+	addendSettleAction as settlementAddendSettleAction,
+	convertResponse as settlementConvertResponse,
+	settle as settlementSettle,
+} from "./settlement"
 
 export namespace api {
 	export namespace Authorization {
@@ -88,9 +92,25 @@ export namespace api {
 		export namespace Configuration {
 			export const is = apiMerchantApi.Configuration.is
 		}
+		export type Link = apiMerchantApi.Link
+		export namespace Link {
+			export const is = apiMerchantApi.Link.is
+		}
+		export type OrderAction = apiMerchantApi.OrderAction
+		export namespace OrderAction {
+			export const is = apiMerchantApi.OrderAction.is
+		}
+		export type SettleAction = apiMerchantApi.SettleAction
+		export namespace SettleAction {
+			export const is = apiMerchantApi.SettleAction.is
+		}
 		export type Settlement = apiMerchantApi.Settlement
 		export namespace Settlement {
 			export const is = apiMerchantApi.Settlement.is
+		}
+		export type SettlementTransactions = apiMerchantApi.SettlementTransactions
+		export namespace SettlementTransactions {
+			export const is = apiMerchantApi.SettlementTransactions.is
 		}
 		export type Transaction = apiMerchantApi.Transaction
 		export namespace Transaction {
@@ -123,5 +143,7 @@ export namespace authorization {
 	export const refund = authorizationRefund
 }
 export namespace settlement {
+	export const addendSettleAction = settlementAddendSettleAction
+	export const convertResponse = settlementConvertResponse
 	export const settle = settlementSettle
 }

@@ -5,7 +5,10 @@ import * as gracely from "gracely"
 import { ApiToken as MerchantApiToken } from "./ApiToken"
 import { Configuration as MerchantApiConfiguration } from "./Configuration"
 import { Link as MerchantApiLink } from "./Link"
+import { OrderAction as MerchantApiOrderAction } from "./OrderAction"
+import { SettleAction as MerchantApiSettleAction } from "./SettleAction"
 import { Settlement as MerchantApiSettlement } from "./Settlement"
+import { SettlementTransactions as MerchantApiSettlementTransactions } from "./SettlementTransactions"
 import { Transaction as MerchantApiTransaction } from "./Transaction"
 
 export class MerchantApi {
@@ -112,9 +115,21 @@ export namespace MerchantApi {
 	export namespace Link {
 		export const is = MerchantApiLink.is
 	}
+	export type OrderAction = MerchantApiOrderAction
+	export namespace OrderAction {
+		export const is = MerchantApiOrderAction.is
+	}
+	export type SettleAction = MerchantApiSettleAction
+	export namespace SettleAction {
+		export const is = MerchantApiSettleAction.is
+	}
 	export type Settlement = MerchantApiSettlement
 	export namespace Settlement {
 		export const is = MerchantApiSettlement.is
+	}
+	export type SettlementTransactions = MerchantApiSettlementTransactions
+	export namespace SettlementTransactions {
+		export const is = MerchantApiSettlementTransactions.is
 	}
 	export type Transaction = MerchantApiTransaction
 	export namespace Transaction {
