@@ -167,6 +167,10 @@ async function getTransactionsBySettlement(
 	return result
 }
 
+function getAmount(amount: number, decimals: number) {
+	return amount / 10 ** decimals
+}
+
 export function convertResponse(
 	merchant: service.api.MerchantApi.MerchantInfo,
 	input: service.api.MerchantApi.SettlementTransactions
@@ -179,34 +183,33 @@ export function convertResponse(
 	result.action = input.transactions.reduce((previous, transaction) => {
 		const OrderId = transaction.reference ?? ""
 		const currency = isoly.Currency.is(transaction.currency) ? transaction.currency : "EUR"
-		const decimals = isoly.Currency.decimalDigits(currency) || 0
-		const amount = transaction.amount / 10 ** decimals
+		const decimals = isoly.Currency.decimalDigits(currency) ?? 0
 		const newEvent: model.Event.Settle = {
 			type: "settle",
 			date: isoly.DateTime.now(),
 			reference: input.settlement.id,
-			amount,
+			amount: getAmount(transaction.amount, decimals),
 			currency,
 			period: {
 				start: input.settlement.period?.start_date ?? "0001-01-01T00:00:00:000Z",
 				end: input.settlement.period?.end_date ?? "0001-01-01T00:00:00:000Z",
 			},
 			fee: {
-				total: input.settlement.fees?.total ?? 0,
-				sales: input.settlement.fees?.sales ?? 0,
-				refunds: input.settlement.fees?.refunds ?? 0,
-				authorisations: input.settlement.fees?.authorisations ?? 0,
-				credits: input.settlement.fees?.credits ?? 0,
-				interchange: input.settlement.fees?.interchange ?? 0,
-				scheme: input.settlement.fees?.scheme ?? 0,
-				minimumProcessing: input.settlement.fees?.service ?? 0,
-				service: input.settlement.fees?.service ?? 0,
-				wireTransfer: input.settlement.fees?.wire_transfer ?? 0,
-				chargebacks: input.settlement.fees?.chargebacks ?? 0,
-				retrievalRequests: input.settlement.fees?.retrieval_requests ?? 0,
+				total: getAmount(input.settlement.fees?.total ?? 0, decimals),
+				sales: getAmount(input.settlement.fees?.sales ?? 0, decimals),
+				refunds: getAmount(input.settlement.fees?.refunds ?? 0, decimals),
+				authorisations: getAmount(input.settlement.fees?.authorisations ?? 0, decimals),
+				credits: getAmount(input.settlement.fees?.credits ?? 0, decimals),
+				interchange: getAmount(input.settlement.fees?.interchange ?? 0, decimals),
+				scheme: getAmount(input.settlement.fees?.scheme ?? 0, decimals),
+				minimumProcessing: getAmount(input.settlement.fees?.service ?? 0, decimals),
+				service: getAmount(input.settlement.fees?.service ?? 0, decimals),
+				wireTransfer: getAmount(input.settlement.fees?.wire_transfer ?? 0, decimals),
+				chargebacks: getAmount(input.settlement.fees?.chargebacks ?? 0, decimals),
+				retrievalRequests: getAmount(input.settlement.fees?.retrieval_requests ?? 0, decimals),
 			},
 			payout: {
-				amount: input.settlement.payout?.amount ?? 0,
+				amount: getAmount(input.settlement.payout?.amount ?? 0, decimals),
 				date: input.settlement.payout?.date
 					? isoly.DateTime.create(new Date(Date.parse(input.settlement.payout?.date))) ?? "0001-01-01T00:00:00:000Z"
 					: "0001-01-01T00:00:00:000Z",
