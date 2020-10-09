@@ -4,7 +4,7 @@ import * as model from "@payfunc/model"
 import * as service from "../index"
 
 export async function settle(
-	merchants: model.Merchant.Key[],
+	merchants: service.api.MerchantApi.MerchantInfo[],
 	configuration: service.api.MerchantApi.Configuration,
 	startDate?: isoly.DateTime,
 	endDate?: isoly.DateTime
@@ -69,7 +69,7 @@ export async function settle(
 
 function addendSettlementTransactions(
 	newList: service.api.MerchantApi.SettlementTransactions[],
-	merchant: model.Merchant.Key,
+	merchant: service.api.MerchantApi.MerchantInfo,
 	initial: service.api.MerchantApi.SettleAction
 ): service.api.MerchantApi.SettleAction {
 	return newList.reduce(
@@ -111,7 +111,7 @@ function appendOrderAction(
 
 async function getTransactions(
 	settlements: service.api.MerchantApi.Settlement[],
-	merchant: model.Merchant.Key,
+	merchant: service.api.MerchantApi.MerchantInfo,
 	connection: service.api.MerchantApi.Connection,
 	startDate: string | undefined,
 	endDate: string | undefined
@@ -134,7 +134,7 @@ async function getTransactions(
 
 async function getTransactionsBySettlement(
 	settlement: service.api.MerchantApi.Settlement,
-	merchant: model.Merchant.Key,
+	merchant: service.api.MerchantApi.MerchantInfo,
 	connection: service.api.MerchantApi.Connection,
 	startDate: string | undefined,
 	endDate: string | undefined
@@ -167,7 +167,7 @@ async function getTransactionsBySettlement(
 }
 
 export function convertResponse(
-	merchant: model.Merchant.Key,
+	merchant: service.api.MerchantApi.MerchantInfo,
 	input: service.api.MerchantApi.SettlementTransactions
 ): service.api.MerchantApi.SettleAction {
 	const result: service.api.MerchantApi.SettleAction = {

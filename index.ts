@@ -96,6 +96,11 @@ export namespace api {
 		export namespace Link {
 			export const is = apiMerchantApi.Link.is
 		}
+		export type MerchantInfo = apiMerchantApi.MerchantInfo
+		export namespace MerchantInfo {
+			export const is = apiMerchantApi.MerchantInfo.is
+			export const convert = apiMerchantApi.MerchantInfo.convert
+		}
 		export type OrderAction = apiMerchantApi.OrderAction
 		export namespace OrderAction {
 			export const is = apiMerchantApi.OrderAction.is

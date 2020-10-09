@@ -2,6 +2,7 @@ import { ApiToken as MerchantApiToken } from "./ApiToken"
 import { Configuration as MerchantApiConfiguration } from "./Configuration"
 import { Connection as MerchantApiConnection } from "./Connection"
 import { Link as MerchantApiLink } from "./Link"
+import { MerchantInfo as MerchantApiMerchantInfo } from "./MerchantInfo"
 import { OrderAction as MerchantApiOrderAction } from "./OrderAction"
 import { SettleAction as MerchantApiSettleAction } from "./SettleAction"
 import { Settlement as MerchantApiSettlement } from "./Settlement"
@@ -21,6 +22,11 @@ export namespace MerchantApi {
 	export type Link = MerchantApiLink
 	export namespace Link {
 		export const is = MerchantApiLink.is
+	}
+	export type MerchantInfo = MerchantApiMerchantInfo
+	export namespace MerchantInfo {
+		export const is = MerchantApiMerchantInfo.is
+		export const convert = MerchantApiMerchantInfo.convert
 	}
 	export type OrderAction = MerchantApiOrderAction
 	export namespace OrderAction {
