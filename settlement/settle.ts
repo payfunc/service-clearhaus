@@ -75,7 +75,7 @@ function addendSettlementTransactions(
 	return newList.reduce(
 		(previous: service.api.MerchantApi.SettleAction, s: service.api.MerchantApi.SettlementTransactions) => {
 			const newAction: service.api.MerchantApi.OrderAction = convertResponse(merchant, s).action
-			appendOrderAction(previous, newAction)
+			previous = appendOrderAction(previous, newAction)
 			return previous
 		},
 		initial
@@ -88,7 +88,7 @@ export function addendSettleAction(
 ): service.api.MerchantApi.SettleAction {
 	return newList.reduce((previous: service.api.MerchantApi.SettleAction, s: service.api.MerchantApi.SettleAction) => {
 		const newAction: service.api.MerchantApi.OrderAction = s.action
-		appendOrderAction(previous, newAction)
+		previous = appendOrderAction(previous, newAction)
 		return previous
 	}, initial)
 }
@@ -96,7 +96,7 @@ export function addendSettleAction(
 function appendOrderAction(
 	previous: service.api.MerchantApi.SettleAction,
 	newAction: service.api.MerchantApi.OrderAction
-) {
+): service.api.MerchantApi.SettleAction {
 	Object.keys(previous.action).forEach(a =>
 		Object.keys(newAction).forEach(b => {
 			if (a == b)
@@ -107,6 +107,7 @@ function appendOrderAction(
 		if (!Object.keys(previous.action).some(b => a == b))
 			previous.action[a] = newAction[a]
 	})
+	return previous
 }
 
 async function getTransactions(
