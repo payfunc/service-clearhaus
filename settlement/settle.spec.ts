@@ -1,7 +1,6 @@
 import * as dotenv from "dotenv"
 dotenv.config()
 import * as isoly from "isoly"
-import * as model from "@payfunc/model"
 import * as service from "./index"
 
 describe("settle test", () => {
@@ -16,15 +15,19 @@ describe("settle test", () => {
 			const output = await service.settle(
 				[
 					{
+						id: "abcdefgh",
+						name: "Merchant A",
 						card: {
 							mid: "9876543",
 						},
-					} as model.Merchant.Key,
+					},
 					{
+						id: "hgfedcba",
+						name: "Merchant B",
 						card: {
 							mid: "1234567",
 						},
-					} as model.Merchant.Key,
+					},
 				],
 				configuration,
 				isoly.DateTime.create(
