@@ -11,12 +11,21 @@ import { Response as CardResponse } from "./api/Card/Response"
 import { Refund as apiRefund } from "./api/Refund"
 import { Request as RefundRequest } from "./api/Refund/Request"
 import { Response as RefundResponse } from "./api/Refund/Response"
+import { MerchantApi as apiMerchantApi } from "./api/MerchantApi"
 import { Method as apiMethod } from "./api/Method"
+import { Request as settleRequest } from "./api/Settle/Request"
+import { Response as settleResponse } from "./api/Settle/Response"
+import { Settle as apiSettle } from "./api/Settle"
 import { Status as apiStatus } from "./api/Status"
 import { cancel as authorizationCancel } from "./authorization/cancel"
 import { capture as authorizationCapture } from "./authorization/capture"
 import { create as authorizationCreate } from "./authorization/create"
 import { refund as authorizationRefund } from "./authorization/refund"
+import {
+	addendSettleAction as settlementAddendSettleAction,
+	convertResponse as settlementConvertResponse,
+	settle as settlementSettle,
+} from "./settlement"
 
 export namespace api {
 	export namespace Authorization {
@@ -73,9 +82,58 @@ export namespace api {
 			export const is = RefundResponse.is
 		}
 	}
+	export namespace MerchantApi {
+		export type Connection = apiMerchantApi.Connection
+		export type ApiToken = apiMerchantApi.ApiToken
+		export namespace ApiToken {
+			export const is = apiMerchantApi.ApiToken.is
+		}
+		export type Configuration = apiMerchantApi.Configuration
+		export namespace Configuration {
+			export const is = apiMerchantApi.Configuration.is
+		}
+		export type Link = apiMerchantApi.Link
+		export namespace Link {
+			export const is = apiMerchantApi.Link.is
+		}
+		export type MerchantInfo = apiMerchantApi.MerchantInfo
+		export namespace MerchantInfo {
+			export const is = apiMerchantApi.MerchantInfo.is
+			export const convert = apiMerchantApi.MerchantInfo.convert
+		}
+		export type OrderAction = apiMerchantApi.OrderAction
+		export namespace OrderAction {
+			export const is = apiMerchantApi.OrderAction.is
+		}
+		export type SettleAction = apiMerchantApi.SettleAction
+		export namespace SettleAction {
+			export const is = apiMerchantApi.SettleAction.is
+		}
+		export type Settlement = apiMerchantApi.Settlement
+		export namespace Settlement {
+			export const is = apiMerchantApi.Settlement.is
+		}
+		export type SettlementTransactions = apiMerchantApi.SettlementTransactions
+		export namespace SettlementTransactions {
+			export const is = apiMerchantApi.SettlementTransactions.is
+		}
+		export type Transaction = apiMerchantApi.Transaction
+		export namespace Transaction {
+			export const is = apiMerchantApi.Transaction.is
+		}
+	}
 	export type Method = apiMethod
 	export namespace Method {
 		export const is = apiMethod.is
+	}
+	export namespace Settle {
+		export const connect = apiSettle.connect
+		export namespace Request {
+			export const is = settleRequest.is
+		}
+		export namespace Response {
+			export const is = settleResponse.is
+		}
 	}
 	export type Status = apiStatus
 	export namespace Status {
@@ -88,4 +146,9 @@ export namespace authorization {
 	export const capture = authorizationCapture
 	export const create = authorizationCreate
 	export const refund = authorizationRefund
+}
+export namespace settlement {
+	export const addendSettleAction = settlementAddendSettleAction
+	export const convertResponse = settlementConvertResponse
+	export const settle = settlementSettle
 }
