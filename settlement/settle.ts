@@ -51,7 +51,7 @@ export async function settle(
 						else {
 							const settlementsList:
 								| service.api.MerchantApi.SettlementTransactions[]
-								| gracely.Error = await getTransactions(settlements, merchant, connection, startDate, endDate)
+								| gracely.Error = await getTransactions(settlements, merchant, connection)
 							const initial: service.api.MerchantApi.SettleAction = { merchant, action: {} }
 							output = gracely.Error.is(settlementsList)
 								? settlementsList
@@ -113,19 +113,28 @@ function appendOrderAction(
 async function getTransactions(
 	settlements: service.api.MerchantApi.Settlement[],
 	merchant: service.api.MerchantApi.MerchantInfo,
-	connection: service.api.MerchantApi.Connection,
-	startDate: string | undefined,
-	endDate: string | undefined
+	connection: service.api.MerchantApi.Connection
 ): Promise<service.api.MerchantApi.SettlementTransactions[] | gracely.Error> {
 	let result: service.api.MerchantApi.SettlementTransactions[] | gracely.Error = []
 	result = [] as service.api.MerchantApi.SettlementTransactions[]
 	result = await settlements.reduce(async (previous, current) => {
 		let output: service.api.MerchantApi.SettlementTransactions[] | gracely.Error = await previous
 		if (!gracely.Error.is(output)) {
-			const transactions = await getTransactionsBySettlement(current, merchant, connection, startDate, endDate)
-			if (gracely.Error.is(transactions))
-				output = transactions
-			else
+			let transactions: service.api.MerchantApi.Transaction[] = []
+			let page = 1
+			let nextPage = false
+			let transactionsPart
+			do {
+				;({ transactionsPart, nextPage } = await getTransactionsBySettlement(current, merchant, connection, page, 50))
+				if (gracely.Error.is(transactionsPart))
+					output = transactionsPart
+				else {
+					transactions = transactions.concat(transactionsPart)
+					if (nextPage)
+						page += 1
+				}
+			} while (!gracely.Error.is(transactionsPart) && nextPage)
+			if (!gracely.Error.is(output))
 				output.push({ settlement: current, transactions })
 		}
 		return output
@@ -137,9 +146,9 @@ async function getTransactionsBySettlement(
 	settlement: service.api.MerchantApi.Settlement,
 	merchant: service.api.MerchantApi.MerchantInfo,
 	connection: service.api.MerchantApi.Connection,
-	startDate: string | undefined,
-	endDate: string | undefined
-): Promise<service.api.MerchantApi.Transaction[] | gracely.Error> {
+	page: number | undefined = 1,
+	perPage: number | undefined = 50
+): Promise<{ transactionsPart: service.api.MerchantApi.Transaction[] | gracely.Error; nextPage: boolean }> {
 	let result: service.api.MerchantApi.Transaction[] | gracely.Error
 	const transactionsResponse = !merchant.card
 		? gracely.client.missingProperty(
@@ -147,12 +156,7 @@ async function getTransactionsBySettlement(
 				"card.Configuration",
 				"Merchant " + merchant.name + " missing valid Cardfunc configuration."
 		  )
-		: await connection.get(
-				"/settlements/" + settlement.id + "/transactions",
-				"date:" + startDate?.substring(0, 10) + ".." + endDate?.substring(0, 10) + " mid:" + merchant.card.mid,
-				undefined,
-				undefined
-		  )
+		: await connection.get("/settlements/" + settlement.id + "/transactions", undefined, page, perPage)
 	if (gracely.Error.is(transactionsResponse))
 		result = transactionsResponse
 	else {
@@ -164,7 +168,7 @@ async function getTransactionsBySettlement(
 			result = !transactions ? gracely.client.notFound() : transactions
 		}
 	}
-	return result
+	return { transactionsPart: result, nextPage: !!transactionsResponse?._links?.next }
 }
 
 function getAmount(amount: number, decimals: number) {

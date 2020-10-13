@@ -7,6 +7,10 @@ export interface Settlement {
 	}
 	_links: {
 		self?: Link
+		first?: Link
+		next?: Link
+		prev?: Link
+		last?: Link
 		"ch:account"?: Link
 		"ch:transactions"?: Link
 		[property: string]: Link | undefined

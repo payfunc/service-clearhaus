@@ -36,6 +36,10 @@ export interface Transaction {
 	}
 	_links?: {
 		self?: MerchantApi.Link
+		first?: MerchantApi.Link
+		next?: MerchantApi.Link
+		prev?: MerchantApi.Link
+		last?: MerchantApi.Link
 		"ch:account"?: MerchantApi.Link
 		"ch:settlement"?: MerchantApi.Link
 		curies?: [MerchantApi.Link]
