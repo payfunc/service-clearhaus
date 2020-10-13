@@ -185,53 +185,58 @@ export function convertResponse(
 	}
 	const initial: { [orderId: string]: (model.Event.Settle | model.Event.Fail)[] } = {}
 	result.action = input.transactions.reduce((previous, transaction) => {
+		let newEvent: model.Event.Settle | model.Event.Fail
 		const OrderId = transaction.reference ?? ""
-		const currency = isoly.Currency.is(transaction.currency) ? transaction.currency : "EUR"
-		const decimals = isoly.Currency.decimalDigits(currency) ?? 0
-		const newEvent: model.Event.Settle = {
-			type: "settle",
-			date: isoly.DateTime.now(),
-			reference: input.settlement.id,
-			amount: getAmount(transaction.amount, decimals),
-			currency,
-			period: {
-				start: input.settlement.period?.start_date ?? "0001-01-01T00:00:00:000Z",
-				end: input.settlement.period?.end_date ?? "0001-01-01T00:00:00:000Z",
-			},
-			fee: {
-				total: getAmount(input.settlement.fees?.total ?? 0, decimals),
-				sales: getAmount(input.settlement.fees?.sales ?? 0, decimals),
-				refunds: getAmount(input.settlement.fees?.refunds ?? 0, decimals),
-				authorisations: getAmount(input.settlement.fees?.authorisations ?? 0, decimals),
-				credits: getAmount(input.settlement.fees?.credits ?? 0, decimals),
-				interchange: getAmount(input.settlement.fees?.interchange ?? 0, decimals),
-				scheme: getAmount(input.settlement.fees?.scheme ?? 0, decimals),
-				minimumProcessing: getAmount(input.settlement.fees?.service ?? 0, decimals),
-				service: getAmount(input.settlement.fees?.service ?? 0, decimals),
-				wireTransfer: getAmount(input.settlement.fees?.wire_transfer ?? 0, decimals),
-				chargebacks: getAmount(input.settlement.fees?.chargebacks ?? 0, decimals),
-				retrievalRequests: getAmount(input.settlement.fees?.retrieval_requests ?? 0, decimals),
-			},
-			payout: {
-				amount: getAmount(input.settlement.payout?.amount ?? 0, decimals),
-				date: input.settlement.payout?.date
+		if (!transaction.settlement)
+			newEvent = {
+				type: "fail",
+				original: "settle",
+				error: gracely.server.backendFailure(
+					"Transaction doesn't contain settlement information. Should only fetch transactions tied to settlement."
+				),
+				date: isoly.DateTime.now(),
+			}
+		else {
+			const currency = isoly.Currency.is(transaction.currency) ? transaction.currency : "EUR"
+			const decimals = isoly.Currency.decimalDigits(currency) ?? 0
+			newEvent = {
+				type: "settle",
+				date: isoly.DateTime.now(),
+				period: {
+					start:
+						(input.settlement.period?.start_date?.length == 10
+							? input.settlement.period?.start_date + "T00:00:00:000Z"
+							: input.settlement.period?.start_date) ?? "0001-01-01T00:00:00:000Z",
+					end:
+						(input.settlement.period?.end_date?.length == 10
+							? input.settlement.period?.end_date + "T23:59:59:999Z"
+							: input.settlement.period?.end_date) ?? "0001-01-01T00:00:00:000Z",
+				},
+				payout: input.settlement.payout?.date
 					? isoly.DateTime.create(new Date(Date.parse(input.settlement.payout?.date))) ?? "0001-01-01T00:00:00:000Z"
 					: "0001-01-01T00:00:00:000Z",
+				amount: {
+					gross: getAmount(transaction.settlement?.amount_gross ?? 0, decimals),
+					net: getAmount(transaction.settlement?.amount_net ?? 0, decimals),
+				},
+				currency,
+				fee: getAmount(transaction.settlement.fees ?? 0, decimals),
 				descriptor: input.settlement.payout?.descriptor,
 				reference: input.settlement.payout?.reference_number,
-			},
+			}
 		}
-		if (Array.isArray(previous[OrderId]))
-			previous[OrderId].push(newEvent)
-		else
-			previous[OrderId] = [newEvent]
+		if (OrderId)
+			if (Array.isArray(previous[OrderId]))
+				previous[OrderId].push(newEvent)
+			else
+				previous[OrderId] = [newEvent]
 		return previous
 	}, initial)
 	return (
 		result ?? {
 			type: "fail",
 			original: "settle",
-			error: gracely.server.backendFailure("TODO!"),
+			error: gracely.server.backendFailure("Unexpected backend error"),
 			date: isoly.DateTime.now(),
 		}
 	)
