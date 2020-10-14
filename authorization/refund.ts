@@ -6,7 +6,7 @@ import * as card from "@cardfunc/model"
 import * as service from "../index"
 
 export async function refund(
-	merchant: model.Merchant.Key,
+	merchant: model.Key,
 	reference: string,
 	currency: isoly.Currency,
 	refundBody: card.Refund.Creatable

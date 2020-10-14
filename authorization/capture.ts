@@ -5,7 +5,7 @@ import * as card from "@cardfunc/model"
 import * as service from "../index"
 
 export async function capture(
-	merchant: model.Merchant.Key,
+	merchant: model.Key,
 	reference: string,
 	currency: isoly.Currency,
 	capture: card.Capture.Creatable,

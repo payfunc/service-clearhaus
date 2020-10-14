@@ -4,7 +4,7 @@ import * as model from "@payfunc/model"
 import * as card from "@cardfunc/model"
 import * as service from "../index"
 
-export async function cancel(merchant: model.Merchant.Key, id: string): Promise<card.Cancel | gracely.Error> {
+export async function cancel(merchant: model.Key, id: string): Promise<card.Cancel | gracely.Error> {
 	let result: card.Cancel | gracely.Error
 	if (!merchant.card)
 		result = gracely.client.unauthorized()
