@@ -5,7 +5,7 @@ import { Response as cardResponse } from "../Card/Response"
 import { Request } from "./Request"
 import { Status } from "../Status"
 import * as model from "@payfunc/model"
-import * as card from "@cardfunc/model"
+import * as card from "@payfunc/model-card"
 
 export interface Response {
 	id: string

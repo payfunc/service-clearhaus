@@ -1,7 +1,7 @@
 import * as gracely from "gracely"
 import * as authly from "authly"
 import * as model from "@payfunc/model"
-import * as card from "@cardfunc/model"
+import * as card from "@payfunc/model-card"
 import * as service from "../index"
 
 export async function cancel(merchant: model.Key, id: string): Promise<card.Cancel | gracely.Error> {
