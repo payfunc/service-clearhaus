@@ -1,5 +1,5 @@
 import * as isoly from "isoly"
-import * as card from "@cardfunc/model"
+import * as card from "@payfunc/model-card"
 
 export interface Response {
 	id: string
