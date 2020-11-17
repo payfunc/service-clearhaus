@@ -6,93 +6,50 @@ import * as service from "../index"
 export async function settle(
 	merchants: service.api.MerchantApi.MerchantInfo[],
 	configuration: service.api.MerchantApi.Configuration,
-	startDate?: isoly.DateTime,
-	endDate?: isoly.DateTime
+	startDate: isoly.DateTime,
+	endDate: isoly.DateTime
 ): Promise<(service.api.MerchantApi.SettleAction | gracely.Error)[] | gracely.Error> {
 	let result: (service.api.MerchantApi.SettleAction | gracely.Error)[] | gracely.Error
 	const connection = await service.api.Settle.connect(configuration)
 	if (gracely.Error.is(connection))
 		result = connection
-	else {
-		if (!endDate)
-			endDate = isoly.DateTime.now()
-		if (!startDate)
-			startDate = isoly.DateTime.create(new Date(isoly.DateTime.parse(endDate).valueOf() - 1000 * 60 * 60 * 24))
-		const responses: (service.api.MerchantApi.SettleAction | gracely.Error)[] = await Promise.all(
-			merchants.map(async merchant => {
-				let output: service.api.MerchantApi.SettleAction | gracely.Error
-				const settlementsResponse = !merchant.card
-					? gracely.client.missingProperty(
-							"card",
-							"card.Configuration",
-							"Merchant " + merchant.name + " missing valid Cardfunc configuration."
-					  )
-					: await connection.get(
-							"/settlements",
-							"payout.date:" +
-								startDate?.substring(0, 10) +
-								".." +
-								endDate?.substring(0, 10) +
-								" mid:" +
-								merchant.card.mid,
-							undefined,
-							undefined
-					  )
-				if (gracely.Error.is(settlementsResponse))
-					output = settlementsResponse
-				else {
-					if (!service.api.Settle.Response.is(settlementsResponse)) {
-						output = gracely.server.backendFailure("Unexpected response from merchant api.")
-					} else {
-						const settlements: service.api.MerchantApi.Settlement[] | undefined =
-							settlementsResponse?._embedded?.["ch:settlements"]
-						if (!settlements)
-							output = gracely.client.notFound()
-						else {
-							const settlementsList:
-								| service.api.MerchantApi.SettlementTransactions[]
-								| gracely.Error = await getTransactions(settlements, merchant, connection)
-							const initial: service.api.MerchantApi.SettleAction = { merchant, action: {} }
-							output = gracely.Error.is(settlementsList)
-								? settlementsList
-								: addendSettlementTransactions(settlementsList, merchant, initial)
-						}
-					}
-				}
-				return output
-			})
+	else
+		result = await Promise.all(
+			merchants.map(async merchant => settleMerchant(merchant, connection, startDate, endDate))
 		)
-		result = responses
-	}
 	return result
 }
 
-function addendSettlementTransactions(
-	newList: service.api.MerchantApi.SettlementTransactions[],
+async function settleMerchant(
 	merchant: service.api.MerchantApi.MerchantInfo,
-	initial: service.api.MerchantApi.SettleAction
-): service.api.MerchantApi.SettleAction {
-	return newList.reduce(
-		(previous: service.api.MerchantApi.SettleAction, s: service.api.MerchantApi.SettlementTransactions) => {
-			const newAction: service.api.MerchantApi.OrderAction = convertResponse(merchant, s).action
-			previous = appendOrderAction(previous, newAction)
-			return previous
-		},
-		initial
+	connection: service.api.MerchantApi.Connection,
+	startDate: isoly.DateTime,
+	endDate: isoly.DateTime
+): Promise<service.api.MerchantApi.SettleAction | gracely.Error> {
+	let result: service.api.MerchantApi.SettleAction | gracely.Error
+	const settlementsResponse = await connection.get(
+		"/settlements",
+		"payout.date:" + startDate.substring(0, 10) + ".." + endDate.substring(0, 10) + " mid:" + merchant.card.mid,
+		undefined,
+		undefined
 	)
+	if (gracely.Error.is(settlementsResponse))
+		result = settlementsResponse
+	else if (!service.api.Settle.Response.is(settlementsResponse))
+		result = gracely.server.backendFailure("Unexpected response from merchant api.")
+	else if (!settlementsResponse?._embedded?.["ch:settlements"])
+		result = gracely.client.notFound()
+	else {
+		const settlementsList = await getTransactions(settlementsResponse._embedded?.["ch:settlements"], connection)
+		result = gracely.Error.is(settlementsList)
+			? settlementsList
+			: settlementsList.reduce<service.api.MerchantApi.SettleAction>(
+					(previous, s) => appendOrderAction(previous, convertResponse(s)),
+					{ merchant, action: {} }
+			  )
+	}
+	return result
 }
-
-export function addendSettleAction(
-	newList: service.api.MerchantApi.SettleAction[],
-	initial: service.api.MerchantApi.SettleAction
-): service.api.MerchantApi.SettleAction {
-	return newList.reduce((previous: service.api.MerchantApi.SettleAction, s: service.api.MerchantApi.SettleAction) => {
-		const newAction: service.api.MerchantApi.OrderAction = s.action
-		previous = appendOrderAction(previous, newAction)
-		return previous
-	}, initial)
-}
-
 function appendOrderAction(
 	previous: service.api.MerchantApi.SettleAction,
 	newAction: service.api.MerchantApi.OrderAction
@@ -112,132 +69,112 @@ function appendOrderAction(
 
 async function getTransactions(
 	settlements: service.api.MerchantApi.Settlement[],
-	merchant: service.api.MerchantApi.MerchantInfo,
 	connection: service.api.MerchantApi.Connection
 ): Promise<service.api.MerchantApi.SettlementTransactions[] | gracely.Error> {
 	let result: service.api.MerchantApi.SettlementTransactions[] | gracely.Error = []
-	result = [] as service.api.MerchantApi.SettlementTransactions[]
-	result = await settlements.reduce(async (previous, current) => {
-		let output: service.api.MerchantApi.SettlementTransactions[] | gracely.Error = await previous
-		if (!gracely.Error.is(output)) {
-			let transactions: service.api.MerchantApi.Transaction[] = []
-			let page = 1
-			let nextPage = false
-			let transactionsPart
-			do {
-				;({ transactionsPart, nextPage } = await getTransactionsBySettlement(current, merchant, connection, page, 50))
-				if (gracely.Error.is(transactionsPart))
-					output = transactionsPart
-				else {
-					transactions = transactions.concat(transactionsPart)
-					if (nextPage)
-						page += 1
+	result = await settlements.reduce<Promise<service.api.MerchantApi.SettlementTransactions[] | gracely.Error>>(
+		async (previous, current) => {
+			let output = await previous
+			if (!gracely.Error.is(output)) {
+				let transactions: service.api.MerchantApi.Transaction[] = []
+				let page = 1
+				let partial: {
+					transactions: service.api.MerchantApi.Transaction[] | gracely.Error
+					continue: boolean
 				}
-			} while (!gracely.Error.is(transactionsPart) && nextPage)
-			if (!gracely.Error.is(output))
-				output.push({ settlement: current, transactions })
-		}
-		return output
-	}, Promise.resolve(result))
+				do {
+					partial = await getTransactionsBySettlement(current, connection, page)
+					if (gracely.Error.is(partial.transactions))
+						output = partial.transactions
+					else {
+						transactions = transactions.concat(partial.transactions)
+						if (partial.continue)
+							page += 1
+					}
+				} while (!gracely.Error.is(partial.transactions) && partial.continue)
+				if (!gracely.Error.is(output))
+					output.push({ settlement: current, transactions })
+			}
+			return output
+		},
+		Promise.resolve(result)
+	)
 	return result
 }
 
 async function getTransactionsBySettlement(
 	settlement: service.api.MerchantApi.Settlement,
-	merchant: service.api.MerchantApi.MerchantInfo,
 	connection: service.api.MerchantApi.Connection,
-	page: number | undefined = 1,
-	perPage: number | undefined = 50
-): Promise<{ transactionsPart: service.api.MerchantApi.Transaction[] | gracely.Error; nextPage: boolean }> {
+	page: number
+): Promise<{ transactions: service.api.MerchantApi.Transaction[] | gracely.Error; continue: boolean }> {
 	let result: service.api.MerchantApi.Transaction[] | gracely.Error
-	const transactionsResponse = !merchant.card
-		? gracely.client.missingProperty(
-				"card",
-				"card.Configuration",
-				"Merchant " + merchant.name + " missing valid Cardfunc configuration."
-		  )
-		: await connection.get("/settlements/" + settlement.id + "/transactions", undefined, page, perPage)
+	const transactionsResponse = await connection.get(
+		"/settlements/" + settlement.id + "/transactions",
+		undefined,
+		page,
+		50
+	)
 	if (gracely.Error.is(transactionsResponse))
 		result = transactionsResponse
-	else {
-		if (!service.api.Settle.Response.is(transactionsResponse)) {
-			result = gracely.server.backendFailure("Unexpected response from merchant api.")
-		} else {
-			const transactions: service.api.MerchantApi.Transaction[] | undefined =
-				transactionsResponse?._embedded?.["ch:transactions"]
-			result = !transactions ? gracely.client.notFound() : transactions
-		}
-	}
-	return { transactionsPart: result, nextPage: !!transactionsResponse?._links?.next }
+	else if (!service.api.Settle.Response.is(transactionsResponse))
+		result = gracely.server.backendFailure("Unexpected response from merchant api.")
+	else
+		result = transactionsResponse?._embedded?.["ch:transactions"] ?? gracely.client.notFound()
+	return { transactions: result, continue: !!transactionsResponse?._links?.next }
 }
 
 function getAmount(amount: number, decimals: number) {
 	return amount / 10 ** decimals
 }
 
-export function convertResponse(
-	merchant: service.api.MerchantApi.MerchantInfo,
-	input: service.api.MerchantApi.SettlementTransactions
-): service.api.MerchantApi.SettleAction {
-	const result: service.api.MerchantApi.SettleAction = {
-		merchant,
-		action: {},
-	}
-	const initial: { [orderId: string]: (model.Event.Settle | model.Event.Fail)[] } = {}
-	result.action = input.transactions.reduce((previous, transaction) => {
-		let newEvent: model.Event.Settle | model.Event.Fail
-		const OrderId = transaction.reference ?? ""
-		if (!transaction.settlement)
-			newEvent = {
-				type: "fail",
-				original: "settle",
-				error: gracely.server.backendFailure(
-					"Transaction doesn't contain settlement information. Should only fetch transactions tied to settlement."
-				),
-				date: isoly.DateTime.now(),
-			}
-		else {
-			const currency = isoly.Currency.is(transaction.currency) ? transaction.currency : "EUR"
-			const decimals = isoly.Currency.decimalDigits(currency) ?? 0
-			newEvent = {
-				type: "settle",
-				date: isoly.DateTime.now(),
-				period: {
-					start:
-						(input.settlement.period?.start_date?.length == 10
-							? input.settlement.period?.start_date + "T00:00:00:000Z"
-							: input.settlement.period?.start_date) ?? "0001-01-01T00:00:00:000Z",
-					end:
-						(input.settlement.period?.end_date?.length == 10
-							? input.settlement.period?.end_date + "T23:59:59:999Z"
-							: input.settlement.period?.end_date) ?? "0001-01-01T00:00:00:000Z",
-				},
-				payout: input.settlement.payout?.date
-					? isoly.DateTime.create(new Date(Date.parse(input.settlement.payout?.date))) ?? "0001-01-01T00:00:00:000Z"
-					: "0001-01-01T00:00:00:000Z",
-				amount: {
+function convertResponse(input: service.api.MerchantApi.SettlementTransactions): service.api.MerchantApi.OrderAction {
+	return input.transactions.reduce<{ [orderId: string]: (model.Event.Settle | model.Event.Fail)[] }>(
+		(previous, transaction) => {
+			let newEvent: model.Event.Settle | model.Event.Fail
+			const OrderId = transaction.reference ?? ""
+			if (!transaction.settlement)
+				newEvent = {
+					type: "fail",
+					original: "settle",
+					error: gracely.server.backendFailure(
+						"Transaction doesn't contain settlement information. Should only fetch transactions tied to settlement."
+					),
+					date: isoly.DateTime.now(),
+				}
+			else {
+				const currency = isoly.Currency.is(transaction.currency) ? transaction.currency : "EUR"
+				const decimals = isoly.Currency.decimalDigits(currency) ?? 0
+				newEvent = {
+					type: "settle",
+					date: isoly.DateTime.now(),
+					period: {
+						start:
+							(input.settlement.period?.start_date?.length == 10
+								? input.settlement.period?.start_date + "T00:00:00:000Z"
+								: input.settlement.period?.start_date) ?? "0001-01-01T00:00:00:000Z",
+						end:
+							(input.settlement.period?.end_date?.length == 10
+								? input.settlement.period?.end_date + "T23:59:59:999Z"
+								: input.settlement.period?.end_date) ?? "0001-01-01T00:00:00:000Z",
+					},
+					payout: input.settlement.payout?.date
+						? isoly.DateTime.create(new Date(Date.parse(input.settlement.payout?.date))) ?? "0001-01-01T00:00:00:000Z"
+						: "0001-01-01T00:00:00:000Z",
 					gross: getAmount(transaction.settlement?.amount_gross ?? 0, decimals),
 					net: getAmount(transaction.settlement?.amount_net ?? 0, decimals),
-				},
-				currency,
-				fee: getAmount(transaction.settlement.fees ?? 0, decimals),
-				descriptor: input.settlement.payout?.descriptor,
-				reference: input.settlement.payout?.reference_number,
+					currency,
+					fee: getAmount(transaction.settlement.fees ?? 0, decimals),
+					descriptor: input.settlement.payout?.descriptor,
+					reference: input.settlement.payout?.reference_number ?? "no reference found",
+				}
 			}
-		}
-		if (OrderId)
-			if (Array.isArray(previous[OrderId]))
-				previous[OrderId].push(newEvent)
-			else
-				previous[OrderId] = [newEvent]
-		return previous
-	}, initial)
-	return (
-		result ?? {
-			type: "fail",
-			original: "settle",
-			error: gracely.server.backendFailure("Unexpected backend error"),
-			date: isoly.DateTime.now(),
-		}
+			if (OrderId)
+				if (Array.isArray(previous[OrderId]))
+					previous[OrderId].push(newEvent)
+				else
+					previous[OrderId] = [newEvent]
+			return previous
+		},
+		{}
 	)
 }
