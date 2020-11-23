@@ -21,11 +21,7 @@ import { cancel as authorizationCancel } from "./authorization/cancel"
 import { capture as authorizationCapture } from "./authorization/capture"
 import { create as authorizationCreate } from "./authorization/create"
 import { refund as authorizationRefund } from "./authorization/refund"
-import {
-	addendSettleAction as settlementAddendSettleAction,
-	convertResponse as settlementConvertResponse,
-	settle as settlementSettle,
-} from "./settlement"
+import { settle as settlementSettle } from "./settlement"
 
 export namespace api {
 	export namespace Authorization {
@@ -148,7 +144,5 @@ export namespace authorization {
 	export const refund = authorizationRefund
 }
 export namespace settlement {
-	export const addendSettleAction = settlementAddendSettleAction
-	export const convertResponse = settlementConvertResponse
 	export const settle = settlementSettle
 }
