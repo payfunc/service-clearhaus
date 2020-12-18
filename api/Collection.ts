@@ -1,7 +1,7 @@
-import { default as fetch, Response as FetchResponse } from "node-fetch"
-import formUrlEncoded from "form-urlencoded"
-import * as authly from "authly"
 import * as gracely from "gracely"
+import * as authly from "authly"
+import formUrlEncoded from "form-urlencoded"
+import { default as fetch, Response as FetchResponse } from "node-fetch"
 
 export class Collection<Request, Response> {
 	private readonly headers: { [key: string]: string }

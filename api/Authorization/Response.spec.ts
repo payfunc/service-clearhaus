@@ -1,7 +1,7 @@
 import * as gracely from "gracely"
+import * as model from "@payfunc/model"
 import { Request } from "./Request"
 import { Response } from "./Response"
-import * as model from "@payfunc/model"
 
 jest.setTimeout(10000)
 describe("test from()", () => {

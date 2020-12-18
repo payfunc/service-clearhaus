@@ -1,5 +1,5 @@
-import * as service from "./index"
 import * as api from "./api"
+import * as service from "./index"
 
 describe("service-clearhaus", () => {
 	it("test accessibility", () => {

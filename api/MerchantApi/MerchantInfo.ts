@@ -1,5 +1,5 @@
-import * as model from "@payfunc/model"
 import * as authly from "authly"
+import * as model from "@payfunc/model"
 
 export interface MerchantInfo {
 	id: authly.Identifier

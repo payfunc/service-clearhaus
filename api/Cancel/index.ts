@@ -1,8 +1,8 @@
+import * as authly from "authly"
+import { Collection } from "../Collection"
+import { Configuration } from "../Configuration"
 import { Request as CancelRequest } from "./Request"
 import { Response as CancelResponse } from "./Response"
-import { Collection } from "../Collection"
-import * as authly from "authly"
-import { Configuration } from "../Configuration"
 
 export namespace Cancel {
 	export function connect(configuration: Configuration, id: string): Collection<Request, Response> {

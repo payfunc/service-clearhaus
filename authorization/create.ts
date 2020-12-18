@@ -1,5 +1,5 @@
-import * as authly from "authly"
 import * as gracely from "gracely"
+import * as authly from "authly"
 import * as model from "@payfunc/model"
 import * as api from "../api"
 import * as clearhaus from "../index"
