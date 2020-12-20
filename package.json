@@ -1,6 +1,6 @@
 {
 	"name": "@payfunc/service-clearhaus",
-	"version": "0.0.18",
+	"version": "0.0.19",
 	"description": "Services for clearhaus",
 	"author": "PayFunc",
 	"license": "MIT",
