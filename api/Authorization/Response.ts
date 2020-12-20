@@ -1,11 +1,11 @@
-import * as authly from "authly"
 import * as gracely from "gracely"
 import * as isoly from "isoly"
-import { Response as cardResponse } from "../Card/Response"
-import { Request } from "./Request"
-import { Status } from "../Status"
-import * as model from "@payfunc/model"
+import * as authly from "authly"
 import * as card from "@payfunc/model-card"
+import * as model from "@payfunc/model"
+import { Response as cardResponse } from "../Card/Response"
+import { Status } from "../Status"
+import { Request } from "./Request"
 
 export interface Response {
 	id: string

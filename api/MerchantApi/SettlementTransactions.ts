@@ -1,17 +1,18 @@
-import * as service from "../../index"
+import { Settlement } from "./Settlement"
+import { Transaction } from "./Transaction"
 
 export type SettlementTransactions = {
-	settlement: service.api.MerchantApi.Settlement
-	transactions: service.api.MerchantApi.Transaction[]
+	settlement: Settlement
+	transactions: Transaction[]
 }
 
 export namespace SettlementTransactions {
 	export function is(value: any | SettlementTransactions): value is SettlementTransactions {
 		return (
 			typeof value == "object" &&
-			service.api.MerchantApi.Settlement.is(value.settlement) &&
+			Settlement.is(value.settlement) &&
 			Array.isArray(value.transactions) &&
-			value.transactions.every(service.api.MerchantApi.Transaction.is)
+			value.transactions.every(Transaction.is)
 		)
 	}
 }

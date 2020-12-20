@@ -1,7 +1,7 @@
-import { default as fetch, Response as FetchResponse } from "node-fetch"
-import formUrlEncoded from "form-urlencoded"
-import * as isoly from "isoly"
 import * as gracely from "gracely"
+import * as isoly from "isoly"
+import formUrlEncoded from "form-urlencoded"
+import { default as fetch, Response as FetchResponse } from "node-fetch"
 import { ApiToken as MerchantApiToken } from "./ApiToken"
 import { Configuration as MerchantApiConfiguration } from "./Configuration"
 

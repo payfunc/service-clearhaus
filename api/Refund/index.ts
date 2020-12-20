@@ -1,8 +1,8 @@
-import { Request as RefundRequest } from "./Request"
-import { Response as RefundResponse } from "./Response"
+import * as authly from "authly"
 import { Collection } from "../Collection"
 import { Configuration } from "../Configuration"
-import * as authly from "authly"
+import { Request as RefundRequest } from "./Request"
+import { Response as RefundResponse } from "./Response"
 
 export namespace Refund {
 	export function connect(configuration: Configuration, id: string): Collection<Request, Response> {
