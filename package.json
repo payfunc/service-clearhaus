@@ -1,6 +1,6 @@
 {
 	"name": "@payfunc/service-clearhaus",
-	"version": "0.0.19",
+	"version": "0.1.0",
 	"description": "Services for clearhaus",
 	"author": "PayFunc",
 	"license": "MIT",
@@ -19,6 +19,12 @@
 		"release": true
 	},
 	"jest": {
+		"transform": {
+			"^.+\\.(j|t)sx?$": "ts-jest"
+		},
+		"transformIgnorePatterns": [
+			"<rootDir>/node_modules/(?!(cryptly|authly|@payfunc|gracely|isoly|servly)/.*)"
+		],
 		"globals": {
 			"ts-jest": {
 				"tsConfig": "tsconfig.test.json"
@@ -49,12 +55,12 @@
 		"clean": "rm -rf dist node_modules coverage"
 	},
 	"dependencies": {
-		"@payfunc/model-card": "0.1.1",
-		"@payfunc/model": "0.2.24",
-		"authly": "0.0.40",
+		"@payfunc/model-card": "^0.2.4",
+		"@payfunc/model": "^0.3.1",
+		"authly": "^0.2.3",
 		"form-urlencoded": "^4.2.1",
-		"gracely": "0.0.37",
-		"isoly": "0.0.15",
+		"gracely": "^0.0.39",
+		"isoly": "^0.0.26",
 		"node-fetch": "^2.6.1"
 	},
 	"devDependencies": {

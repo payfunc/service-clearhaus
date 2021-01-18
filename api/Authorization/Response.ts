@@ -72,7 +72,8 @@ export namespace Response {
 	): Promise<model.Payment.Card | gracely.Error> {
 		let result: model.Payment.Card | gracely.Error | undefined
 		const decimals = isoly.Currency.decimalDigits(response.currency) || 0
-		const cardInfo = (await card.Card.Token.verify(token)) || (await model.Account.Method.verify(token))
+		const cardInfo: card.Card.V1.Token | model.Account.Method.Card | undefined =
+			(await card.Card.V1.Token.verify(token)) || (await model.Account.Method.verify(token))
 		if (!cardInfo)
 			result = gracely.client.invalidContent(
 				"token",
@@ -97,8 +98,8 @@ export namespace Response {
 				output.card = token
 			else if (model.Account.Method.is(cardInfo)) {
 				const cardInternalInfo =
-					(await authly.Verifier.create("development", authly.Algorithm.none())?.verify(cardInfo.token)) ||
-					(await authly.Verifier.create("production", authly.Algorithm.none())?.verify(cardInfo.token))
+					(await authly.Verifier.create(authly.Algorithm.none())?.verify(cardInfo.token, "development")) ||
+					(await authly.Verifier.create(authly.Algorithm.none())?.verify(cardInfo.token, "production"))
 				output.account = token
 				if (model.Account.Method.Card.Creatable.is(cardInternalInfo) && cardInternalInfo.card)
 					output.card = cardInternalInfo.card
