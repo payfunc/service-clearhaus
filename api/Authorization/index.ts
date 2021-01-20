@@ -1,5 +1,6 @@
 import * as gracely from "gracely"
 import * as authly from "authly"
+import * as model from "@payfunc/model-card"
 import { post as cardfuncPost } from "../Cardfunc"
 import { Configuration } from "../Configuration"
 import { Request as AuthorizationRequest } from "./Request"
@@ -11,7 +12,10 @@ export namespace Authorization {
 		request: Request,
 		token: authly.Token
 	): Promise<Response | gracely.Error> {
-		return cardfuncPost(configuration, `card/${token}/clearhaus/authorization`, request)
+		const endpointPath = model.Card.V1.Token.verify(token)
+			? `card/${token}/clearhaus/authorization`
+			: `card/clearhaus/${token}/authorization`
+		return cardfuncPost(configuration, endpointPath, request)
 	}
 	export type Request = AuthorizationRequest
 	export namespace Request {

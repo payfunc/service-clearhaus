@@ -31,6 +31,7 @@ export interface Response {
 		voids: { href: string }
 		refunds: { href: string }
 	}
+	payfunc?: { card?: card.Card }
 }
 
 export namespace Response {
@@ -62,7 +63,9 @@ export namespace Response {
 			typeof value._links.voids == "object" &&
 			typeof value._links.voids.href == "string" &&
 			typeof value._links.refunds == "object" &&
-			typeof value._links.refunds.href == "string"
+			typeof value._links.refunds.href == "string" &&
+			(value.payfunc == undefined ||
+				(typeof value.payfunc == "object" && (value.payfunc.card == undefined || card.Card.is(value.payfunc.card))))
 		)
 	}
 	export async function from(
@@ -72,8 +75,7 @@ export namespace Response {
 	): Promise<model.Payment.Card | gracely.Error> {
 		let result: model.Payment.Card | gracely.Error | undefined
 		const decimals = isoly.Currency.decimalDigits(response.currency) || 0
-		const cardInfo: card.Card.V1.Token | model.Account.Method.Card | undefined =
-			(await card.Card.V1.Token.verify(token)) || (await model.Account.Method.verify(token))
+		const cardInfo = (await card.Card.Token.verify(token)) || (await model.Account.Method.verify(token))
 		if (!cardInfo)
 			result = gracely.client.invalidContent(
 				"token",
@@ -87,10 +89,10 @@ export namespace Response {
 				amount: response.amount / 10 ** decimals,
 				currency: response.currency,
 				type: "card",
-				scheme: cardInfo.scheme ?? "unknown",
-				iin: cardInfo.iin ?? "??????",
-				last4: cardInfo.last4 ?? "????",
-				expires: cardInfo.expires ?? [1, 0],
+				scheme: response.payfunc?.card?.scheme ?? "unknown",
+				iin: response.payfunc?.card?.iin ?? "??????",
+				last4: response.payfunc?.card?.last4 ?? "????",
+				expires: response.payfunc?.card?.expires ?? [1, 0],
 				service: "cardfunc",
 				status: "created",
 			}
