@@ -1,7 +1,6 @@
 import * as gracely from "gracely"
 import * as isoly from "isoly"
 import formUrlEncoded from "form-urlencoded"
-import { default as fetch, Response as FetchResponse } from "node-fetch"
 import { ApiToken as MerchantApiToken } from "./ApiToken"
 import { Configuration as MerchantApiConfiguration } from "./Configuration"
 
@@ -88,7 +87,7 @@ export class Connection {
 			return !q[1] ? s : s + ((s == "" ? "?" : "&") + q[0] + "=" + q[1])
 		}, "")
 	}
-	private async getError(response: FetchResponse): Promise<gracely.Error> {
+	private async getError(response: globalThis.Response): Promise<gracely.Error> {
 		return gracely.server.backendFailure({
 			status: response.status,
 			body: response.headers.get("Content-Type")?.includes("json") ? await response.json() : await response.text(),

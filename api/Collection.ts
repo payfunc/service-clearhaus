@@ -1,7 +1,6 @@
 import * as gracely from "gracely"
 import * as authly from "authly"
 import formUrlEncoded from "form-urlencoded"
-import { default as fetch, Response as FetchResponse } from "node-fetch"
 
 export class Collection<Request, Response> {
 	private readonly headers: { [key: string]: string }
@@ -35,7 +34,7 @@ export class Collection<Request, Response> {
 		const response = await fetch(this.url + "/" + id, { method: "GET", headers: this.headers })
 		return response.ok ? response.json() : this.getError(response)
 	}
-	private async getError(response: FetchResponse): Promise<gracely.Error> {
+	private async getError(response: globalThis.Response): Promise<gracely.Error> {
 		return gracely.server.backendFailure({
 			status: response.status,
 			body: response.headers.get("Content-Type")?.includes("json") ? await response.json() : await response.text(),

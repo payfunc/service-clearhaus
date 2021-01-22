@@ -1,5 +1,4 @@
 import * as gracely from "gracely"
-import { default as fetch } from "node-fetch"
 import { Configuration } from "./Configuration"
 
 export async function post<Request, Response>(
