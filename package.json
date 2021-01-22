@@ -49,12 +49,12 @@
 		"clean": "rm -rf dist node_modules coverage"
 	},
 	"dependencies": {
-		"@payfunc/model-card": "0.1.1",
-		"@payfunc/model": "0.2.24",
+		"@payfunc/model-card": "0.1.13",
+		"@payfunc/model": "0.2.40",
 		"authly": "0.0.40",
 		"form-urlencoded": "^4.2.1",
 		"gracely": "0.0.37",
-		"isoly": "0.0.15",
+		"isoly": "0.0.27",
 		"node-fetch": "^2.6.1"
 	},
 	"devDependencies": {

@@ -12,9 +12,5 @@ export async function post<Request, Response>(
 		headers: { "Content-Type": "application/json; charset=utf-8", authorization: "Bearer " + configuration.key },
 		body: JSON.stringify(request),
 	}).catch(_ => undefined)
-	return !response
-		? gracely.server.unavailable()
-		: response.headers.get("Content-Type")?.startsWith("application/json")
-		? response.json()
-		: response.text()
+	return !response ? gracely.server.unavailable() : response.json()
 }
