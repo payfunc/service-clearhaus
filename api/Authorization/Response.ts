@@ -75,8 +75,11 @@ export namespace Response {
 	): Promise<model.Payment.Card | gracely.Error> {
 		let result: model.Payment.Card | gracely.Error | undefined
 		const decimals = isoly.Currency.decimalDigits(response.currency) || 0
-		const cardInfo = (await card.Card.Token.verify(token)) || (await model.Account.Method.verify(token))
-		if (!cardInfo)
+		const cardInformation =
+			(await card.Card.Token.verify(token)) ??
+			(await card.Card.V1.Token.verify(token)) ??
+			(await model.Account.Method.verify(token))
+		if (!cardInformation)
 			result = gracely.client.invalidContent(
 				"token",
 				"Card | Account",
@@ -89,22 +92,24 @@ export namespace Response {
 				amount: response.amount / 10 ** decimals,
 				currency: response.currency,
 				type: "card",
-				scheme: response.payfunc?.card?.scheme ?? "unknown",
-				iin: response.payfunc?.card?.iin ?? "??????",
-				last4: response.payfunc?.card?.last4 ?? "????",
-				expires: response.payfunc?.card?.expires ?? [1, 0],
+				scheme: response.payfunc?.card?.scheme ?? (cardInformation.scheme as card.Card.Scheme) ?? "unknown",
+				iin: response.payfunc?.card?.iin ?? (cardInformation.iin as string) ?? "??????",
+				last4: response.payfunc?.card?.last4 ?? (cardInformation.last4 as string) ?? "????",
+				expires: response.payfunc?.card?.expires ?? cardInformation.expires ?? [1, 0],
 				service: "cardfunc",
 				status: "created",
 			}
-			if (card.Card.Token.is(cardInfo))
+			if (card.Card.Token.is(cardInformation))
 				output.card = token
-			else if (model.Account.Method.is(cardInfo)) {
-				const cardInternalInfo =
-					(await authly.Verifier.create(authly.Algorithm.none())?.verify(cardInfo.token, "development")) ||
-					(await authly.Verifier.create(authly.Algorithm.none())?.verify(cardInfo.token, "production"))
+			else if (model.Account.Method.is(cardInformation)) {
+				const cardInternalInformation = await authly.Verifier.create(authly.Algorithm.none())?.verify(
+					cardInformation.token,
+					"development",
+					"production"
+				)
 				output.account = token
-				if (model.Account.Method.Card.Creatable.is(cardInternalInfo) && cardInternalInfo.card)
-					output.card = cardInternalInfo.card
+				if (model.Account.Method.Card.Creatable.is(cardInternalInformation) && cardInternalInformation.card)
+					output.card = cardInternalInformation.card
 			}
 			if (request.text_on_statement)
 				output.descriptor = request.text_on_statement
