@@ -12,7 +12,7 @@ export namespace Authorization {
 		request: Request,
 		token: authly.Token
 	): Promise<Response | gracely.Error> {
-		const endpointPath = model.Card.Token.verify(token)
+		const endpointPath = (await model.Card.Token.verify(token))
 			? `card/clearhaus/${token}/authorization`
 			: `card/${token}/clearhaus/authorization`
 		return cardfuncPost(configuration, endpointPath, request)
