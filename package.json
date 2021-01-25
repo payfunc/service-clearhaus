@@ -51,7 +51,7 @@
 	"dependencies": {
 		"@payfunc/model-card": "0.1.13",
 		"@payfunc/model": "0.2.40",
-		"authly": "0.0.40",
+		"authly": "0.1.7",
 		"form-urlencoded": "^4.2.1",
 		"gracely": "0.0.37",
 		"isoly": "0.0.27",
