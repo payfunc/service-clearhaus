@@ -56,7 +56,7 @@
 	},
 	"dependencies": {
 		"@payfunc/model-card": "0.2.7",
-		"@payfunc/model": "^0.3.1",
+		"@payfunc/model": "payfunc/model#model-card-bump",
 		"authly": "^0.2.3",
 		"form-urlencoded": "^4.2.1",
 		"gracely": "^0.0.39",
