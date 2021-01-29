@@ -50,7 +50,7 @@
 	},
 	"dependencies": {
 		"@payfunc/model-card": "0.1.15",
-		"@payfunc/model": "payfunc/model#model-update-0.2",
+		"@payfunc/model": "0.2.41",
 		"authly": "0.1.7",
 		"form-urlencoded": "^4.2.1",
 		"gracely": "0.0.37",
