@@ -55,7 +55,7 @@
 		"clean": "rm -rf dist node_modules coverage"
 	},
 	"dependencies": {
-		"@payfunc/model-card": "^0.2.5",
+		"@payfunc/model-card": "0.2.7",
 		"@payfunc/model": "^0.3.1",
 		"authly": "^0.2.3",
 		"form-urlencoded": "^4.2.1",

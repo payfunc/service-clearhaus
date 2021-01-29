@@ -12,10 +12,13 @@ export async function refund(
 	refundBody: card.Refund.Creatable
 ): Promise<card.Refund | gracely.Error> {
 	let result: card.Refund | gracely.Error
-	if (!merchant.card)
+	if (!merchant.card || !merchant.card.acquirer.key)
 		result = gracely.client.unauthorized()
 	else {
-		const clearhausRefund = service.api.Refund.connect(merchant.card.acquirer, reference)
+		const clearhausRefund = service.api.Refund.connect(
+			{ url: merchant.card.acquirer.url, key: merchant.card.acquirer.key },
+			reference
+		)
 		const refundRequest: service.api.Refund.Request = {}
 		const decimals = isoly.Currency.decimalDigits(currency) || 0
 		if (refundBody.amount)
