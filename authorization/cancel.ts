@@ -6,10 +6,13 @@ import * as service from "../index"
 
 export async function cancel(merchant: model.Key, id: string): Promise<card.Cancel | gracely.Error> {
 	let result: card.Cancel | gracely.Error
-	if (!merchant.card)
+	if (!merchant.card || !merchant.card.acquirer.key)
 		result = gracely.client.unauthorized()
 	else {
-		const clearhausCancel = service.api.Cancel.connect(merchant.card.acquirer, id)
+		const clearhausCancel = service.api.Cancel.connect(
+			{ url: merchant.card.acquirer.url, key: merchant.card.acquirer.key },
+			id
+		)
 		const response = await clearhausCancel.create({})
 		if (gracely.Error.is(response))
 			result = response
