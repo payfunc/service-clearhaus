@@ -12,10 +12,13 @@ export async function capture(
 	id: string
 ): Promise<card.Capture | gracely.Error> {
 	let result: card.Capture | gracely.Error
-	if (!merchant.card)
+	if (!merchant.card || !merchant.card.acquirer.key)
 		result = gracely.client.unauthorized()
 	else {
-		const captures = service.api.Capture.connect(merchant.card.acquirer, reference)
+		const captures = service.api.Capture.connect(
+			{ url: merchant.card.acquirer.url, key: merchant.card.acquirer.key },
+			reference
+		)
 		const request: service.api.Capture.Request = {}
 		const decimals = isoly.Currency.decimalDigits(currency) || 0
 		if (capture.amount)
