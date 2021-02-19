@@ -4,7 +4,7 @@ import * as model from "@payfunc/model"
 import * as service from "../index"
 
 export async function settle(
-	merchants: service.api.MerchantApi.MerchantInfo[],
+	merchants: service.api.MerchantApi.Merchant[],
 	configuration: service.api.MerchantApi.Configuration,
 	startDate: isoly.DateTime,
 	endDate: isoly.DateTime
@@ -21,7 +21,7 @@ export async function settle(
 }
 
 async function settleMerchant(
-	merchant: service.api.MerchantApi.MerchantInfo,
+	merchant: service.api.MerchantApi.Merchant,
 	connection: service.api.MerchantApi.Connection,
 	startDate: isoly.DateTime,
 	endDate: isoly.DateTime
@@ -29,7 +29,7 @@ async function settleMerchant(
 	let result: service.api.MerchantApi.SettleAction | gracely.Error
 	const settlementsResponse = await connection.get(
 		"/settlements",
-		"payout.date:" + startDate.substring(0, 10) + ".." + endDate.substring(0, 10) + " mid:" + merchant.card.mid,
+		"payout.date:" + startDate.substring(0, 10) + ".." + endDate.substring(0, 10) + " mid:" + merchant.reference,
 		undefined,
 		undefined
 	)
@@ -148,18 +148,9 @@ function convertResponse(input: service.api.MerchantApi.SettlementTransactions):
 					type: "settle",
 					date: isoly.DateTime.now(),
 					period: {
-						start:
-							(input.settlement.period?.start_date?.length == 10
-								? input.settlement.period?.start_date + "T00:00:00:000Z"
-								: input.settlement.period?.start_date) ?? "0001-01-01T00:00:00:000Z",
-						end:
-							(input.settlement.period?.end_date?.length == 10
-								? input.settlement.period?.end_date + "T23:59:59:999Z"
-								: input.settlement.period?.end_date) ?? "0001-01-01T00:00:00:000Z",
+						start: input.settlement.period.start_date,
+						end: input.settlement.period.end_date,
 					},
-					payout: input.settlement.payout?.date
-						? isoly.DateTime.create(new Date(Date.parse(input.settlement.payout?.date))) ?? "0001-01-01T00:00:00:000Z"
-						: "0001-01-01T00:00:00:000Z",
 					gross: getAmount(transaction.settlement?.amount_gross ?? 0, decimals),
 					net: getAmount(transaction.settlement?.amount_net ?? 0, decimals),
 					currency,
@@ -167,6 +158,8 @@ function convertResponse(input: service.api.MerchantApi.SettlementTransactions):
 					descriptor: input.settlement.payout?.descriptor,
 					reference: input.settlement.payout?.reference_number ?? "no reference found",
 				}
+				if (input.settlement.payout?.date)
+					newEvent.payout = input.settlement.payout?.date
 			}
 			if (OrderId)
 				if (Array.isArray(previous[OrderId]))
