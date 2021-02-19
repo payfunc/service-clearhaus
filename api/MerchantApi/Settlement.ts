@@ -37,7 +37,7 @@ export interface Settlement {
 		reference_number?: string
 		descriptor?: string
 	}
-	period?: {
+	period: {
 		start_date: string
 		end_date: string
 	}
