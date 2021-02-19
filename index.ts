@@ -92,10 +92,10 @@ export namespace api {
 		export namespace Link {
 			export const is = apiMerchantApi.Link.is
 		}
-		export type MerchantInfo = apiMerchantApi.MerchantInfo
-		export namespace MerchantInfo {
-			export const is = apiMerchantApi.MerchantInfo.is
-			export const convert = apiMerchantApi.MerchantInfo.convert
+		export type Merchant = apiMerchantApi.Merchant
+		export namespace Merchant {
+			export const is = apiMerchantApi.Merchant.is
+			export const convert = apiMerchantApi.Merchant.convert
 		}
 		export type OrderAction = apiMerchantApi.OrderAction
 		export namespace OrderAction {

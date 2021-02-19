@@ -17,16 +17,12 @@ describe("settle test", () => {
 					{
 						id: "abcdefgh",
 						name: "Merchant A",
-						card: {
-							mid: "9876543",
-						},
+						reference: "9876543",
 					},
 					{
 						id: "hgfedcba",
 						name: "Merchant B",
-						card: {
-							mid: "1234567",
-						},
+						reference: "1234567",
 					},
 				],
 				configuration,
