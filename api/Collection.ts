@@ -12,7 +12,7 @@ export class Collection<Request, Response> {
 		private algorithm?: authly.Algorithm
 	) {
 		this.headers = {
-			Authorization: `Basic ${new Buffer(key + ":").toString("base64")}`,
+			Authorization: `Basic ${authly.Base64.encode(key + ":")}`,
 			"Content-Type": "application/x-www-form-urlencoded",
 			Accept: "application/vnd.clearhaus-gateway.hal+json; version=0.10.0; charset=utf-8",
 		}
