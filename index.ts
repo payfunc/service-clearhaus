@@ -8,6 +8,7 @@ import { Request as CaptureRequest } from "./api/Capture/Request"
 import { Response as CaptureResponse } from "./api/Capture/Response"
 import { Request as CardRequest } from "./api/Card/Request"
 import { Response as CardResponse } from "./api/Card/Response"
+import { Configuration as ApiConfiguration } from "./api/Configuration"
 import { MerchantApi as apiMerchantApi } from "./api/MerchantApi"
 import { Method as apiMethod } from "./api/Method"
 import { Refund as apiRefund } from "./api/Refund"
@@ -65,6 +66,21 @@ export namespace api {
 		export type Response = CardResponse
 		export namespace Response {
 			export const is = CardResponse.is
+		}
+	}
+	export type Configuration = ApiConfiguration
+	export namespace Configuration {
+		export const is = ApiConfiguration.is
+		export const from = ApiConfiguration.from
+		export type Card = ApiConfiguration.Card
+		export namespace Card {
+			export const is = ApiConfiguration.Card.is
+			export const from = ApiConfiguration.Card.from
+		}
+		export type Clearhaus = ApiConfiguration.Clearhaus
+		export namespace Clearhaus {
+			export const is = ApiConfiguration.Clearhaus.is
+			export const from = ApiConfiguration.Clearhaus.from
 		}
 	}
 	export namespace Refund {
