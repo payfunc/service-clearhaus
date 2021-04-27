@@ -6,7 +6,7 @@ import { Configuration } from "../api/Configuration"
 import * as service from "../index"
 
 export async function refund(
-	configuration: Configuration,
+	configuration: Configuration.Clearhaus,
 	reference: string,
 	currency: isoly.Currency,
 	refundBody: card.Refund.Creatable

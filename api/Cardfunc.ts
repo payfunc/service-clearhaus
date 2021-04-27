@@ -3,7 +3,7 @@ import { default as fetch } from "node-fetch"
 import { Configuration } from "./Configuration"
 
 export async function post<Request, Response>(
-	configuration: Configuration,
+	configuration: Configuration.Card,
 	endpoint: string,
 	request: Request
 ): Promise<Response | gracely.Error> {
