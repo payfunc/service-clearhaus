@@ -4,7 +4,7 @@ import * as card from "@payfunc/model-card"
 import { Configuration } from "../api/Configuration"
 import * as service from "../index"
 
-export async function cancel(configuration: Configuration, id: string): Promise<card.Cancel | gracely.Error> {
+export async function cancel(configuration: Configuration.Clearhaus, id: string): Promise<card.Cancel | gracely.Error> {
 	let result: card.Cancel | gracely.Error
 	const clearhausCancel = service.api.Cancel.connect(configuration, id)
 	const response = await clearhausCancel.create({})

@@ -8,7 +8,7 @@ import { Response as AuthorizationResponse } from "./Response"
 
 export namespace Authorization {
 	export async function post(
-		configuration: Configuration,
+		configuration: Configuration.Card,
 		request: Request,
 		token: authly.Token
 	): Promise<Response | gracely.Error> {

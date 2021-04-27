@@ -5,7 +5,7 @@ import { Request as CancelRequest } from "./Request"
 import { Response as CancelResponse } from "./Response"
 
 export namespace Cancel {
-	export function connect(configuration: Configuration, id: string): Collection<Request, Response> {
+	export function connect(configuration: Configuration.Clearhaus, id: string): Collection<Request, Response> {
 		return new Collection(
 			configuration.url + "/authorizations/" + id + "/voids",
 			configuration.key,

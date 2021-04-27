@@ -72,6 +72,16 @@ export namespace api {
 	export namespace Configuration {
 		export const is = ApiConfiguration.is
 		export const from = ApiConfiguration.from
+		export type Card = ApiConfiguration.Card
+		export namespace Card {
+			export const is = ApiConfiguration.Card.is
+			export const from = ApiConfiguration.Card.from
+		}
+		export type Clearhaus = ApiConfiguration.Clearhaus
+		export namespace Clearhaus {
+			export const is = ApiConfiguration.Clearhaus.is
+			export const from = ApiConfiguration.Clearhaus.from
+		}
 	}
 	export namespace Refund {
 		export const connect = apiRefund.connect

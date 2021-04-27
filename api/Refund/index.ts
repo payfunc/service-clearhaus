@@ -5,7 +5,7 @@ import { Request as RefundRequest } from "./Request"
 import { Response as RefundResponse } from "./Response"
 
 export namespace Refund {
-	export function connect(configuration: Configuration, id: string): Collection<Request, Response> {
+	export function connect(configuration: Configuration.Clearhaus, id: string): Collection<Request, Response> {
 		return new Collection(
 			configuration.url + "/authorizations/" + id + "/refunds",
 			configuration.key,

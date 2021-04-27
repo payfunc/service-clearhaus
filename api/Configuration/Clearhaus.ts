@@ -1,17 +1,17 @@
 import * as gracely from "gracely"
 import * as model from "@payfunc/model"
-export interface Configuration {
+export interface Clearhaus {
 	url: string
 	key: string
 	signer: string
 	secret: string
 }
-export namespace Configuration {
-	export function is(value: any | Configuration): value is Configuration {
+export namespace Clearhaus {
+	export function is(value: any | Clearhaus): value is Clearhaus {
 		return (
 			typeof value == "object" &&
 			typeof value.url == "string" &&
-			typeof value.url == "string" &&
+			typeof value.key == "string" &&
 			typeof value.signer == "string" &&
 			typeof value.secret == "string"
 		)
@@ -20,7 +20,7 @@ export namespace Configuration {
 		merchant: model.Key,
 		signer?: string | undefined,
 		secret?: string | undefined
-	): Configuration | gracely.Error {
+	): Clearhaus | gracely.Error {
 		const result = {
 			url: merchant.card?.acquirer.url,
 			key: merchant.card?.acquirer.key,

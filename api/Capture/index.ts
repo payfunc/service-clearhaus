@@ -5,7 +5,10 @@ import { Request as CaptureRequest } from "./Request"
 import { Response as CaptureResponse } from "./Response"
 
 export namespace Capture {
-	export function connect(configuration: Configuration, authorization: string): Collection<Request, Response> {
+	export function connect(
+		configuration: Configuration.Clearhaus,
+		authorization: string
+	): Collection<Request, Response> {
 		return new Collection(
 			`${configuration.url}/authorizations/${authorization}/captures`,
 			configuration.key,
