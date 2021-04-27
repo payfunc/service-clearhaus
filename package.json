@@ -55,16 +55,15 @@
 		"clean": "rm -rf dist node_modules coverage"
 	},
 	"dependencies": {
-		"@payfunc/model-card": "0.2.7",
 		"@payfunc/model": "0.3.5",
+		"@payfunc/model-card": "0.2.7",
 		"authly": "^0.2.3",
-		"form-urlencoded": "^4.2.1",
+		"form-urlencoded": "6.0.3",
 		"gracely": "^0.0.39",
 		"isoly": "^0.0.26",
 		"node-fetch": "^2.6.1"
 	},
 	"devDependencies": {
-		"@types/form-urlencoded": "^2.0.1",
 		"@types/jest": "^26.0.0",
 		"@types/node": "^14.0.24",
 		"@types/node-fetch": "^2.5.7",
