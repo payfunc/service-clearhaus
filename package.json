@@ -55,8 +55,8 @@
 		"clean": "rm -rf dist node_modules coverage"
 	},
 	"dependencies": {
-		"@payfunc/model": "0.3.5",
-		"@payfunc/model-card": "0.2.7",
+		"@payfunc/model": "0.3.13",
+		"@payfunc/model-card": "0.2.15",
 		"authly": "^0.2.3",
 		"form-urlencoded": "6.0.3",
 		"gracely": "^0.0.39",
@@ -71,6 +71,7 @@
 		"@typescript-eslint/parser": "^3.7.1",
 		"babel-core": "^6.26.3",
 		"babel-jest": "^26.1.0",
+		"dotenv": "10.0.0",
 		"eslint": "^7.6.0",
 		"eslint-plugin-prettierx": "github:nilssonemma/eslint-plugin-prettierx#master",
 		"eslint-plugin-simple-import-sort": "^7.0.0",
