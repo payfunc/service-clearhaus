@@ -78,12 +78,12 @@ export namespace Response {
 		const cardInformation =
 			(await card.Card.Token.verify(token)) ??
 			(await card.Card.V1.Token.verify(token)) ??
-			(await model.Account.Method.verify(token))
+			(await model.Customer.Method.verify(token))
 		if (!cardInformation)
 			result = gracely.client.invalidContent(
 				"token",
-				"Card | Account",
-				"Can't verify token as either card or account method."
+				"Card | Customer",
+				"Can't verify token as either card or customer method."
 			)
 		else {
 			const output: model.Payment.Card = {
@@ -101,14 +101,14 @@ export namespace Response {
 			}
 			if (card.Card.Token.is(cardInformation))
 				output.card = token
-			else if (model.Account.Method.is(cardInformation)) {
+			else if (model.Customer.Method.is(cardInformation)) {
 				const cardInternalInformation = await authly.Verifier.create(authly.Algorithm.none())?.verify(
 					cardInformation.token,
 					"development",
 					"production"
 				)
-				output.account = token
-				if (model.Account.Method.Card.Creatable.is(cardInternalInformation) && cardInternalInformation.card)
+				output.customer = token
+				if (model.Customer.Method.Card.Creatable.is(cardInternalInformation) && cardInternalInformation.card)
 					output.card = cardInternalInformation.card
 			}
 			if (request.text_on_statement)
