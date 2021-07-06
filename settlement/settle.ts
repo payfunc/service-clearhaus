@@ -1,16 +1,16 @@
 import * as gracely from "gracely"
 import * as isoly from "isoly"
 import * as model from "@payfunc/model"
-import * as service from "../index"
+import * as api from "../api"
 
 export async function settle(
-	merchants: service.api.MerchantApi.Merchant[],
-	configuration: service.api.MerchantApi.Configuration,
+	merchants: api.MerchantApi.Merchant[],
+	configuration: api.MerchantApi.Configuration,
 	startDate: isoly.DateTime,
 	endDate: isoly.DateTime
-): Promise<(service.api.MerchantApi.SettleAction | gracely.Error)[] | gracely.Error> {
-	let result: (service.api.MerchantApi.SettleAction | gracely.Error)[] | gracely.Error
-	const connection = await service.api.Settle.connect(configuration)
+): Promise<(api.MerchantApi.SettleAction | gracely.Error)[] | gracely.Error> {
+	let result: (api.MerchantApi.SettleAction | gracely.Error)[] | gracely.Error
+	const connection = await api.Settle.connect(configuration)
 	if (gracely.Error.is(connection))
 		result = connection
 	else
@@ -21,12 +21,12 @@ export async function settle(
 }
 
 async function settleMerchant(
-	merchant: service.api.MerchantApi.Merchant,
-	connection: service.api.MerchantApi.Connection,
+	merchant: api.MerchantApi.Merchant,
+	connection: api.MerchantApi.Connection,
 	startDate: isoly.DateTime,
 	endDate: isoly.DateTime
-): Promise<service.api.MerchantApi.SettleAction | gracely.Error> {
-	let result: service.api.MerchantApi.SettleAction | gracely.Error
+): Promise<api.MerchantApi.SettleAction | gracely.Error> {
+	let result: api.MerchantApi.SettleAction | gracely.Error
 	const settlementsResponse = await connection.get(
 		"/settlements",
 		"payout.date:" + startDate.substring(0, 10) + ".." + endDate.substring(0, 10) + " mid:" + merchant.reference,
@@ -35,7 +35,7 @@ async function settleMerchant(
 	)
 	if (gracely.Error.is(settlementsResponse))
 		result = settlementsResponse
-	else if (!service.api.Settle.Response.is(settlementsResponse))
+	else if (!api.Settle.Response.is(settlementsResponse))
 		result = gracely.server.backendFailure("Unexpected response from merchant api.")
 	else if (!settlementsResponse?._embedded?.["ch:settlements"])
 		result = gracely.client.notFound()
@@ -43,7 +43,7 @@ async function settleMerchant(
 		const settlementsList = await getTransactions(settlementsResponse._embedded?.["ch:settlements"], connection)
 		result = gracely.Error.is(settlementsList)
 			? settlementsList
-			: settlementsList.reduce<service.api.MerchantApi.SettleAction>(
+			: settlementsList.reduce<api.MerchantApi.SettleAction>(
 					(previous, s) => appendOrderAction(previous, convertResponse(s)),
 					{ merchant, action: {} }
 			  )
@@ -51,9 +51,9 @@ async function settleMerchant(
 	return result
 }
 function appendOrderAction(
-	previous: service.api.MerchantApi.SettleAction,
-	newAction: service.api.MerchantApi.OrderAction
-): service.api.MerchantApi.SettleAction {
+	previous: api.MerchantApi.SettleAction,
+	newAction: api.MerchantApi.OrderAction
+): api.MerchantApi.SettleAction {
 	Object.keys(previous.action).forEach(a =>
 		Object.keys(newAction).forEach(b => {
 			if (a == b)
@@ -68,18 +68,18 @@ function appendOrderAction(
 }
 
 async function getTransactions(
-	settlements: service.api.MerchantApi.Settlement[],
-	connection: service.api.MerchantApi.Connection
-): Promise<service.api.MerchantApi.SettlementTransactions[] | gracely.Error> {
-	let result: service.api.MerchantApi.SettlementTransactions[] | gracely.Error = []
-	result = await settlements.reduce<Promise<service.api.MerchantApi.SettlementTransactions[] | gracely.Error>>(
+	settlements: api.MerchantApi.Settlement[],
+	connection: api.MerchantApi.Connection
+): Promise<api.MerchantApi.SettlementTransactions[] | gracely.Error> {
+	let result: api.MerchantApi.SettlementTransactions[] | gracely.Error = []
+	result = await settlements.reduce<Promise<api.MerchantApi.SettlementTransactions[] | gracely.Error>>(
 		async (previous, current) => {
 			let output = await previous
 			if (!gracely.Error.is(output)) {
-				let transactions: service.api.MerchantApi.Transaction[] = []
+				let transactions: api.MerchantApi.Transaction[] = []
 				let page = 1
 				let partial: {
-					transactions: service.api.MerchantApi.Transaction[] | gracely.Error
+					transactions: api.MerchantApi.Transaction[] | gracely.Error
 					continue: boolean
 				}
 				do {
@@ -103,11 +103,11 @@ async function getTransactions(
 }
 
 async function getTransactionsBySettlement(
-	settlement: service.api.MerchantApi.Settlement,
-	connection: service.api.MerchantApi.Connection,
+	settlement: api.MerchantApi.Settlement,
+	connection: api.MerchantApi.Connection,
 	page: number
-): Promise<{ transactions: service.api.MerchantApi.Transaction[] | gracely.Error; continue: boolean }> {
-	let result: service.api.MerchantApi.Transaction[] | gracely.Error
+): Promise<{ transactions: api.MerchantApi.Transaction[] | gracely.Error; continue: boolean }> {
+	let result: api.MerchantApi.Transaction[] | gracely.Error
 	const transactionsResponse = await connection.get(
 		"/settlements/" + settlement.id + "/transactions",
 		undefined,
@@ -116,7 +116,7 @@ async function getTransactionsBySettlement(
 	)
 	if (gracely.Error.is(transactionsResponse))
 		result = transactionsResponse
-	else if (!service.api.Settle.Response.is(transactionsResponse))
+	else if (!api.Settle.Response.is(transactionsResponse))
 		result = gracely.server.backendFailure("Unexpected response from merchant api.")
 	else
 		result = transactionsResponse?._embedded?.["ch:transactions"] ?? gracely.client.notFound()
@@ -127,7 +127,7 @@ function getAmount(amount: number, decimals: number) {
 	return amount / 10 ** decimals
 }
 
-function convertResponse(input: service.api.MerchantApi.SettlementTransactions): service.api.MerchantApi.OrderAction {
+function convertResponse(input: api.MerchantApi.SettlementTransactions): api.MerchantApi.OrderAction {
 	return input.transactions.reduce<{ [orderId: string]: (model.Event.Settle | model.Event.Fail)[] }>(
 		(previous, transaction) => {
 			let newEvent: model.Event.Settle | model.Event.Fail
