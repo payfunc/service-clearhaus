@@ -55,8 +55,8 @@
 		"clean": "rm -rf dist node_modules coverage"
 	},
 	"dependencies": {
-		"@payfunc/model": "payfunc/model#circular-dependencies",
-		"@payfunc/model-card": "payfunc/model-card#circular-dependencies",
+		"@payfunc/model": "0.3.14",
+		"@payfunc/model-card": "0.2.16",
 		"authly": "^0.2.3",
 		"form-urlencoded": "6.0.3",
 		"gracely": "^0.0.39",
