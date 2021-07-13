@@ -2,18 +2,17 @@ import * as gracely from "gracely"
 import * as isoly from "isoly"
 import * as authly from "authly"
 import * as card from "@payfunc/model-card"
-import { Configuration } from "../api/Configuration"
-import * as service from "../index"
+import * as api from "../api"
 
 export async function refund(
-	configuration: Configuration.Clearhaus,
+	configuration: api.Configuration.Clearhaus,
 	reference: string,
 	currency: isoly.Currency,
 	refundBody: card.Refund.Creatable
 ): Promise<card.Refund | gracely.Error> {
 	let result: card.Refund | gracely.Error
-	const clearhausRefund = service.api.Refund.connect(configuration, reference)
-	const refundRequest: service.api.Refund.Request = {}
+	const clearhausRefund = api.Refund.connect(configuration, reference)
+	const refundRequest: api.Refund.Request = {}
 	const decimals = isoly.Currency.decimalDigits(currency) || 0
 	if (refundBody.amount)
 		refundRequest.amount = Math.round(refundBody.amount * 10 ** decimals)
@@ -34,7 +33,7 @@ export async function refund(
 				}
 				break
 			default:
-				result = service.api.Status.asError(response.status)
+				result = api.Status.asError(response.status)
 				break
 		}
 	}

@@ -1,12 +1,11 @@
 import * as gracely from "gracely"
 import * as authly from "authly"
 import * as card from "@payfunc/model-card"
-import { Configuration } from "../api/Configuration"
-import * as service from "../index"
+import { Cancel, Configuration, Status } from "../api"
 
 export async function cancel(configuration: Configuration.Clearhaus, id: string): Promise<card.Cancel | gracely.Error> {
 	let result: card.Cancel | gracely.Error
-	const clearhausCancel = service.api.Cancel.connect(configuration, id)
+	const clearhausCancel = Cancel.connect(configuration, id)
 	const response = await clearhausCancel.create({})
 	if (gracely.Error.is(response))
 		result = response
@@ -20,7 +19,7 @@ export async function cancel(configuration: Configuration.Clearhaus, id: string)
 				}
 				break
 			default:
-				result = service.api.Status.asError(response.status)
+				result = Status.asError(response.status)
 				break
 		}
 	}

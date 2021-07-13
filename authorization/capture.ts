@@ -1,8 +1,8 @@
 import * as gracely from "gracely"
 import * as isoly from "isoly"
 import * as card from "@payfunc/model-card"
+import * as api from "../api"
 import { Configuration } from "../api/Configuration"
-import * as service from "../index"
 
 export async function capture(
 	configuration: Configuration.Clearhaus,
@@ -12,8 +12,8 @@ export async function capture(
 	id: string
 ): Promise<card.Capture | gracely.Error> {
 	let result: card.Capture | gracely.Error
-	const captures = service.api.Capture.connect(configuration, reference)
-	const request: service.api.Capture.Request = {}
+	const captures = api.Capture.connect(configuration, reference)
+	const request: api.Capture.Request = {}
 	const decimals = isoly.Currency.decimalDigits(currency) || 0
 	if (capture.amount)
 		request.amount = Math.round(capture.amount * 10 ** decimals)
